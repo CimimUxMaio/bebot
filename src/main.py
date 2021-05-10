@@ -3,12 +3,13 @@ from brain import BRAIN
 import config
 import parsing
 import datacollector
+import itertools
 
 
 PREFIX = config.PREFIX
 bot = commands.Bot(command_prefix=PREFIX)
 
-@bot.command()
+@bot.command(aliases=["cl"])
 async def classify_last(ctx, classification):
     datacollector.check_classification(classification)
     classified_message = datacollector.classify_last_command_message(classification)
@@ -30,7 +31,7 @@ async def on_message(message):
     if len(without_prefix) == 0:
         return
 
-    predefined_commands = [command.name for command in bot.commands]
+    predefined_commands = itertools.chain(*[[command.name] + command.aliases for command in bot.commands])
     first_word = without_prefix.split()[0]
     if first_word in predefined_commands:
         await bot.process_commands(message)
