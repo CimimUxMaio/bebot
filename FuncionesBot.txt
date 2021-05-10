@@ -1,0 +1,20 @@
+Comandos:
+- Musica (en principio puedo llamar a otro bot para simplificar)
+- Hora (ponele, para rellenar por ahora)
+- Ping (buscar algun sv en chile para que sea mas atinado)
+- Reportar error de interpretacion
+
+-- Avanzados
+- Parche del LOL
+- Asignar roles
+
+- ???
+- Voz (activar el "escuchar comando", por si es complicado que escuche todo el tiempo)
+- Saludo
+
+Detalles:
+- Respuestas en forma de audio?
+- Escuchar comandos por voz?
+- Al decir el nombre del bot primero
+- Cuando no entienda un comando, pedir que lo reformule y consultar si la nueva interpretacion es correcta
+para aprender como interpretar el 1ero
