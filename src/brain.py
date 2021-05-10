@@ -23,7 +23,7 @@ class __Brain:
         best_index = np.argmax(prediction)
         
         if prediction[best_index] < 0.6:
-            print([ round(p, 2) for p in tf.reshape(prediction, [-1]).numpy() ])
+            print([ round(p, 2) for p in prediction.numpy() ])
             return commands.unknown
 
         return commands.COMMAND_MAPPINGS[best_index]

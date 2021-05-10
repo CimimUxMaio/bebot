@@ -2,10 +2,17 @@ from discord.ext import commands
 from brain import BRAIN
 import config
 import parsing
+import datacollector
 
 
 PREFIX = config.PREFIX
 bot = commands.Bot(command_prefix=PREFIX)
+
+@bot.command()
+async def classify_last(ctx, classification):
+    datacollector.check_classification(classification)
+    classified_message = datacollector.classify_last_command_message(classification)
+    await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
 
 
 @bot.event
@@ -18,11 +25,19 @@ async def on_message(message):
     if not message.content.startswith(PREFIX):
         return
 
-    ctx = await bot.get_context(message)
-
     without_prefix = message.content.lstrip(PREFIX)
-    command_message, parameters = parsing.parse_message(without_prefix)
-    await BRAIN.identify_command(command_message)(ctx, *parameters)
+
+    if len(without_prefix) == 0:
+        return
+
+    predefined_commands = [command.name for command in bot.commands]
+    first_word = without_prefix.split()[0]
+    if first_word in predefined_commands:
+        await bot.process_commands(message)
+    else:
+        command_message, parameters = parsing.parse_message(without_prefix)
+        datacollector.set_last_command_message(command_message)
+        await BRAIN.identify_command(command_message)(bot, message, *parameters)
      
 
 if __name__ == "__main__":

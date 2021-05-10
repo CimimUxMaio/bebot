@@ -1,4 +1,4 @@
-
+import re
 
 def params(message):
     open_i = message.find("[")
@@ -12,11 +12,5 @@ def params(message):
 
 def parse_message(message):
     parameters = params(message)
-
-    words = message.split()
-    command_message_words = []
-    for word in words:
-        if word not in parameters:
-            command_message_words.append(word)
-
-    return ' '.join(command_message_words), parameters
+    command_message = re.sub('\[(.*)\]', '', message).strip()
+    return command_message, parameters
