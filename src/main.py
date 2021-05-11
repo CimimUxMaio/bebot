@@ -1,15 +1,16 @@
 from discord.ext import commands
+from discord.ext.commands.errors import CommandError, MissingRequiredArgument
 from discord.ext.commands.help import DefaultHelpCommand
 from brain import BRAIN
 import config
-from exceptions import ModelException, UnknownCommandException
+from exceptions import ModelException, UnknownCommand
 import parsing
 import datacollector
 import itertools
 from datetime import datetime
 
 
-PREFIX = config.PREFIX
+PREFIX = config.BOT_PREFIX
 bot = commands.Bot(command_prefix=PREFIX, help_command=DefaultHelpCommand())
 
 
@@ -22,8 +23,8 @@ async def ping(ctx, *args):
 
 
 @bot.command(aliases=["p"])
-async def play(ctx, *args):
-    await ctx.send(f"Playing \"{' '.join(args)}\"")
+async def play(ctx, song, *args):
+    await ctx.send(f"Playing \"{' '.join([song] + [*args])}\"")
 
 
 @bot.command()
@@ -44,11 +45,16 @@ async def classify_last(ctx, classification):
 
 @bot.event
 async def on_command_error(ctx, error):
-    original_error = error.original
-    if isinstance(original_error, UnknownCommandException):
-        datacollector.set_last_uninterpreted_message(original_error.command_message)
-    elif isinstance(original_error, ModelException):
-        await ctx.send(str(original_error))
+    if hasattr(error, "original"):
+        if isinstance(error.original, ModelException):
+            if isinstance(error.original, UnknownCommand):
+                datacollector.set_last_uninterpreted_message(error.original.command_message)
+                return
+            
+        await ctx.send(str(error.original))
+        return
+    elif isinstance(error, CommandError):
+        await ctx.send(str(error))
         return
 
     raise error
@@ -72,6 +78,7 @@ async def on_message(message):
     predefined_commands = itertools.chain(*[[command.name] + command.aliases for command in bot.commands])
     first_word = without_prefix.split()[0]
     if first_word in predefined_commands:
+        print("ENTRE 1ro!!")
         await bot.process_commands(message)
     else:
         command_message, parameters = parsing.parse_message(without_prefix)

@@ -1,5 +1,5 @@
 import csv
-from exceptions import InvalidClassification, LastUninterpretedCommandMessageMissingException
+from exceptions import InvalidClassification, LastUninterpretedCommandMessageMissing
 
 
 def is_valid_classification(client, classification):
@@ -19,7 +19,7 @@ def classify_last_uninterpreted_message(classification):
     global __last_uninterpreted_message
     
     if __last_uninterpreted_message is None:
-        raise LastUninterpretedCommandMessageMissingException()
+        raise LastUninterpretedCommandMessageMissing()
 
     last_message = __last_uninterpreted_message
     __last_uninterpreted_message = None

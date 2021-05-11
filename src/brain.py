@@ -5,7 +5,7 @@ import numpy as np
 import pickle
 from unidecode import unidecode
 import re
-from exceptions import UnknownCommandException
+from exceptions import UnknownCommand
 
 
 COMMAND_MAPPINGS = {
@@ -29,7 +29,7 @@ class __Brain:
         
         if prediction[best_index] < 0.6:
             print([ round(p, 2) for p in prediction.numpy() ])
-            raise UnknownCommandException(message)
+            raise UnknownCommand(message)
 
         return COMMAND_MAPPINGS[best_index]
 
