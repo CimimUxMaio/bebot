@@ -34,7 +34,7 @@ async def time(ctx, *args):
 
 @bot.command(aliases=["cl"])
 async def classify_last(ctx, classification):
-    datacollector.check_classification(client, classification)
+    datacollector.check_classification(bot, classification)
     classified_message = datacollector.classify_last_command_message(classification)
     await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
 
