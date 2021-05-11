@@ -2,10 +2,21 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import numpy as np
-import commands
 import pickle
 from unidecode import unidecode
 import re
+
+
+class UnknownCommandException(BaseException):
+    def __init__(self):
+        super().__init__(f"Couldn't resolve the given message to a valid command")
+
+
+COMMAND_MAPPINGS = {
+    0: "ping",
+    1: "time",
+    2: "play"
+}
 
 
 class __Brain:
@@ -17,16 +28,14 @@ class __Brain:
 
     def identify_command(self, message):
         encoded_message = self.__encode_message(message)
-
         prediction = tf.reshape(self.__model.predict(encoded_message), [-1])
-
         best_index = np.argmax(prediction)
         
         if prediction[best_index] < 0.6:
             print([ round(p, 2) for p in prediction.numpy() ])
-            return commands.unknown
+            raise UnknownCommandException()
 
-        return commands.COMMAND_MAPPINGS[best_index]
+        return COMMAND_MAPPINGS[best_index]
 
     def __normalize_message(self, message):
         return unidecode(re.sub(r'[^\w\s]', '', message.lower()))

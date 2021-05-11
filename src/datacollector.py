@@ -12,17 +12,11 @@ class InvalidClassification(BaseException):
         super().__init__(f"{invalid_classification} is not a valid command classification")
 
 
-class CommandClassification(enum.Enum):
-    PING = "ping",
-    TIME = "time",
-    PLAY = "play"
+def is_valid_classification(client, classification):
+    return classification in [cmd.name for cmd in client.commands]
 
-
-def is_valid_classification(classification):
-    return classification in [class_.value for class_ in CommandClassification]
-
-def check_classification(classification):
-    if not is_valid_classification(classification):
+def check_classification(client, classification):
+    if not is_valid_classification(client, classification):
         raise InvalidClassification(classification)
 
 
