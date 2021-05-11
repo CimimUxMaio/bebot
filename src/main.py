@@ -16,25 +16,25 @@ bot = commands.Bot(command_prefix=PREFIX, help_command=DefaultHelpCommand())
 
 # INTERPRETED COMMANDS #
 
-@bot.command()
+@bot.command(brief=config.brief("ping"), description=config.description("ping"))
 async def ping(ctx, *args):
     latency = (datetime.utcnow() - ctx.message.created_at).total_seconds() * 1000
     await ctx.send(f"Pong! Latency: {latency} ms")
 
 
-@bot.command(aliases=["p"])
+@bot.command(aliases=["p"], brief=config.brief("play"), description=config.description("play"))
 async def play(ctx, song, *args):
     await ctx.send(f"Playing \"{' '.join([song] + [*args])}\"")
 
 
-@bot.command()
+@bot.command(brief=config.brief("time"), description=config.description("time"))
 async def time(ctx, *args):
     await ctx.send(f"Time: {datetime.now()}")
 
 
 # MANUAL COMMANDS #
 
-@bot.command(aliases=["cl"])
+@bot.command(aliases=["cl"], brief=config.brief("classify_last"), description=config.description("classify_last"))
 async def classify_last(ctx, classification):
     datacollector.check_classification(bot, classification)
     classified_message = datacollector.classify_last_uninterpreted_message(classification)
@@ -78,7 +78,6 @@ async def on_message(message):
     predefined_commands = itertools.chain(*[[command.name] + command.aliases for command in bot.commands])
     first_word = without_prefix.split()[0]
     if first_word in predefined_commands:
-        print("ENTRE 1ro!!")
         await bot.process_commands(message)
     else:
         command_message, parameters = parsing.parse_message(without_prefix)
