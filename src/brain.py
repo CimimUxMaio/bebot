@@ -5,11 +5,7 @@ import numpy as np
 import pickle
 from unidecode import unidecode
 import re
-
-
-class UnknownCommandException(BaseException):
-    def __init__(self):
-        super().__init__(f"Couldn't resolve the given message to a valid command")
+from exceptions import UnknownCommandException
 
 
 COMMAND_MAPPINGS = {
@@ -33,7 +29,7 @@ class __Brain:
         
         if prediction[best_index] < 0.6:
             print([ round(p, 2) for p in prediction.numpy() ])
-            raise UnknownCommandException()
+            raise UnknownCommandException(message)
 
         return COMMAND_MAPPINGS[best_index]
 

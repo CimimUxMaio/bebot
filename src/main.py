@@ -2,6 +2,7 @@ from discord.ext import commands
 from discord.ext.commands.help import DefaultHelpCommand
 from brain import BRAIN
 import config
+from exceptions import ModelException, UnknownCommandException
 import parsing
 import datacollector
 import itertools
@@ -35,8 +36,22 @@ async def time(ctx, *args):
 @bot.command(aliases=["cl"])
 async def classify_last(ctx, classification):
     datacollector.check_classification(bot, classification)
-    classified_message = datacollector.classify_last_command_message(classification)
+    classified_message = datacollector.classify_last_uninterpreted_message(classification)
     await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
+
+
+# EVENTS #
+
+@bot.event
+async def on_command_error(ctx, error):
+    original_error = error.original
+    if isinstance(original_error, UnknownCommandException):
+        datacollector.set_last_uninterpreted_message(original_error.command_message)
+    elif isinstance(original_error, ModelException):
+        await ctx.send(str(original_error))
+        return
+
+    raise error
 
 
 @bot.event
@@ -60,7 +75,6 @@ async def on_message(message):
         await bot.process_commands(message)
     else:
         command_message, parameters = parsing.parse_message(without_prefix)
-        datacollector.set_last_command_message(command_message)
         command_name = BRAIN.identify_command(command_message)
         ctx = await bot.get_context(message)
         await ctx.invoke(bot.get_command(command_name), *parameters)

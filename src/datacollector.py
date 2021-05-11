@@ -1,15 +1,5 @@
-import enum
 import csv
-
-
-class LastCommandMessageMissingException(BaseException):
-    def __init__(self):
-        super().__init__("Last command message is missing or has already been classified")
-
-
-class InvalidClassification(BaseException):
-    def __init__(self, invalid_classification):
-        super().__init__(f"{invalid_classification} is not a valid command classification")
+from exceptions import InvalidClassification, LastUninterpretedCommandMessageMissingException
 
 
 def is_valid_classification(client, classification):
@@ -20,19 +10,19 @@ def check_classification(client, classification):
         raise InvalidClassification(classification)
 
 
-__last_command_message = None
-def set_last_command_message(message):
-    global __last_command_message
-    __last_command_message = message
+__last_uninterpreted_message = None
+def set_last_uninterpreted_message(message):
+    global __last_uninterpreted_message
+    __last_uninterpreted_message = message
 
-def classify_last_command_message(classification):
-    global __last_command_message
+def classify_last_uninterpreted_message(classification):
+    global __last_uninterpreted_message
     
-    if __last_command_message is None:
-        raise LastCommandMessageMissingException()
+    if __last_uninterpreted_message is None:
+        raise LastUninterpretedCommandMessageMissingException()
 
-    last_message = __last_command_message
-    __last_command_message = None
+    last_message = __last_uninterpreted_message
+    __last_uninterpreted_message = None
 
     with open("../NeuralNetwork/collected_data.csv", "a") as collected_data_file:
         csv_writer = csv.DictWriter(collected_data_file, ["sentence", "command"])
