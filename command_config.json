@@ -13,13 +13,13 @@
 
     "play": {
         "type": "INTERPRETED",
-        "brief": "Plays the given music/video",
-        "description": "Plays the given music/video"
+        "brief": "Plays the given music / video",
+        "description": "Plays the given music / video"
     },
 
     "classify_last": {
-        "type": "MANUAL",
-        "brief": "Classifies the last uninterpreted command. Valid classifications are the names of the INTERPRETED commands",
-        "description": "Classifies the last uninterpreted command. Valid classifications are the names of the INTERPRETED commands"
+        "type": "STRICTLY MANUAL",
+        "brief": "Classifies the last uninterpreted command",
+        "description": "Classifies the last uninterpreted command; valid classifications are the names of the INTERPRETED commands"
     }
 }

@@ -5,14 +5,7 @@ import numpy as np
 import pickle
 from unidecode import unidecode
 import re
-from exceptions import UnknownCommand
-
-
-COMMAND_MAPPINGS = {
-    0: "ping",
-    1: "time",
-    2: "play"
-}
+import interpretedcommands as icommands
 
 
 class __Brain:
@@ -20,6 +13,12 @@ class __Brain:
         self.__model = load_model("../NeuralNetwork/model.h5")
         with open("../NeuralNetwork/word_index.pkl", "rb") as word_index_file:
             self.__word_index = pickle.load(word_index_file)
+
+        self.__COMMAND_MAPPINGS = {
+            0: icommands.ping,
+            1: icommands.time,
+            2: icommands.play
+        }
 
 
     def identify_command(self, message):
@@ -29,9 +28,10 @@ class __Brain:
         
         if prediction[best_index] < 0.6:
             print([ round(p, 2) for p in prediction.numpy() ])
-            raise UnknownCommand(message)
+            return icommands.undefined(message)
 
-        return COMMAND_MAPPINGS[best_index]
+        return self.__COMMAND_MAPPINGS[best_index]
+
 
     def __normalize_message(self, message):
         return unidecode(re.sub(r'[^\w\s]', '', message.lower()))

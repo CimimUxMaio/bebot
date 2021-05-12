@@ -3,11 +3,10 @@ class ModelException(Exception):
         super().__init__(message)
 
 
-class UnknownCommand(ModelException):
-    def __init__(self, command_message):
-        self.command_message = command_message
-        super().__init__(f"Couldn't resolve \"{command_message}\" to a valid command")
-
+class MissingParameter(ModelException):
+    def __init__(self, param_name):
+        super().__init__(f"{param_name} is a required argument that is missing.")
+        
 
 class LastUninterpretedCommandMessageMissing(ModelException):
     def __init__(self):
