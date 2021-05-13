@@ -23,7 +23,7 @@ async def help(ctx):
 
     SEPARATOR = "\u200b"
 
-    embed.add_field(name="INTERPRETED", value="The command can be interpreted by a given sentence", inline=False)
+    embed.add_field(name="INTERPRETED", value="The command can be interpreted by a given sentence. Command parameters must be given between '[]'", inline=False)
     for name, info in config.interpreted_commands().items():
         command_namings = f"**{name}**"
         command_parameters = ' '.join([f"<{param_name}>" for param_name in info["parameters"]])
