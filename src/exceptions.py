@@ -16,3 +16,10 @@ class LastUninterpretedCommandMessageMissing(ModelException):
 class InvalidClassification(ModelException):
     def __init__(self, invalid_classification):
         super().__init__(f"\"{invalid_classification}\" is not a valid command classification")
+
+
+
+async def handle_model_error(ctx, error):
+    if isinstance(error, ModelException):
+        await ctx.send(str(error))
+    

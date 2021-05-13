@@ -1,25 +1,24 @@
 {
     "time": {
         "type": "INTERPRETED",
-        "brief": "Returns the current server time and date",
+        "parameters": [],
         "description": "Returns the current server time and date"
     },
 
     "ping": {
         "type": "INTERPRETED",
-        "brief": "Returns the senders latency against the discord server",
+        "parameters": [],
         "description": "Returns the senders latency against the discord server"
     },
 
     "play": {
         "type": "INTERPRETED",
-        "brief": "Plays the given music / video",
+        "parameters": ["song_name"],
         "description": "Plays the given music / video"
     },
 
     "classify_last": {
-        "type": "STRICTLY MANUAL",
-        "brief": "Classifies the last uninterpreted command",
+        "type": "MANUAL",
         "description": "Classifies the last uninterpreted command; valid classifications are the names of the INTERPRETED commands"
     }
 }

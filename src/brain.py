@@ -26,7 +26,7 @@ class __Brain:
         prediction = tf.reshape(self.__model.predict(encoded_message), [-1])
         best_index = np.argmax(prediction)
         
-        if prediction[best_index] < 0.6:
+        if prediction[best_index] < 0.5:
             print([ round(p, 2) for p in prediction.numpy() ])
             return icommands.undefined(message)
 

@@ -16,7 +16,8 @@ with open("../command_config.json", "r") as command_config_file:
 
 
 def description(command_name):
-    return f'({COMMAND_CONFIG[command_name]["type"]}) {COMMAND_CONFIG[command_name]["description"]}'
+    return f'{COMMAND_CONFIG[command_name]["description"]}'
 
-def brief(command_name):
-    return COMMAND_CONFIG[command_name]["brief"]
+
+def interpreted_commands():
+    return { command_name: info for command_name, info in COMMAND_CONFIG.items() if info["type"] == "INTERPRETED" }

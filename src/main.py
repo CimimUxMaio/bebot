@@ -1,42 +1,50 @@
+import discord
 from discord.ext import commands
-from discord.ext.commands.errors import CommandError, MissingRequiredArgument
-from discord.ext.commands.help import DefaultHelpCommand
+from discord.ext.commands.errors import CommandError
 from brain import BRAIN
 import config
-from exceptions import ModelException
+from exceptions import ModelException, handle_model_error
 import parsing
 import datacollector
 import itertools
-import interpretedcommands as icommands
 
 
 
 PREFIX = config.BOT_PREFIX
-bot = commands.Bot(command_prefix=PREFIX, help_command=DefaultHelpCommand())
+bot = commands.Bot(command_prefix=PREFIX)
+bot.remove_command("help")
 
 
+# MANUAL COMMANDS #
 
-# INTERPRETED COMMANDS #
+@bot.command(aliases=["h"], description="Shows this message")
+async def help(ctx):
+    embed = discord.Embed(title="Help", color = discord.Colour.blue())
 
-@bot.command(brief=config.brief("ping"), description=config.description("ping"))
-async def ping(ctx):
-    await icommands.ping(ctx)
+    SEPARATOR = "\u200b"
+
+    embed.add_field(name="INTERPRETED", value="The command can be interpreted by a given sentence", inline=False)
+    for name, info in config.interpreted_commands().items():
+        command_namings = f"**{name}**"
+        command_parameters = ' '.join([f"<{param_name}>" for param_name in info["parameters"]])
+        command_description = info["description"]
+        field_title = '  '.join([command_namings, command_parameters])
+        embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
+
+    embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
+    embed.add_field(name="MANUAL", value="The exact command name or alias should be passed for the command to work", inline=False)
+    for cmd in bot.commands:
+        command_namings = f"**{cmd.name}**" + "".join([f" | {alias}" for alias in cmd.aliases])
+        command_parameters = ' '.join([f"<{param_name}>" for param_name in cmd.clean_params.keys()])
+        command_description = cmd.description
+        field_title = '  '.join([command_namings, command_parameters])
+        embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
+        
+    embed.set_footer(icon_url = ctx.author.avatar_url, text = f"Requested by {ctx.author.name}")
+    await ctx.send(embed=embed)
 
 
-@bot.command(aliases=["p"], brief=config.brief("play"), description=config.description("play"))
-async def play(ctx, *, song_name):
-    await icommands.play(ctx, song_name)
-
-
-@bot.command(brief=config.brief("time"), description=config.description("time"))
-async def time(ctx):
-    await icommands.time(ctx)
-
-
-
-# STRICTLY MANUAL COMMANDS #
-
-@bot.command(aliases=["cl"], brief=config.brief("classify_last"), description=config.description("classify_last"))
+@bot.command(aliases=["cl"], description=config.description("classify_last"))
 async def classify_last(ctx, classification):
     datacollector.check_classification(bot, classification)
     classified_message = datacollector.classify_last_uninterpreted_message(classification)
@@ -49,13 +57,10 @@ def is_manual_command(command_name):
     manual_commands = itertools.chain(*[[command.name] + command.aliases for command in bot.commands])
     return command_name in manual_commands
 
-async def handle_model_error(ctx, error):
-    await ctx.send(str(error))
-
 
 @bot.event
 async def on_command_error(ctx, error):
-    if hasattr(error, "original") and isinstance(error.original, ModelException):
+    if hasattr(error, "original"):
         await handle_model_error(ctx, error.original)
         return 
 
