@@ -18,6 +18,11 @@ class InvalidClassification(ModelException):
         super().__init__(f"\"{invalid_classification}\" is not a valid command classification")
 
 
+class InvalidSongName(ModelException):
+    def __init__(self, song_name):
+        super().__init__(f"Could not download the song: {song_name}. Incorrect format try another. This could be due to it being in playlist or livestream format.")
+
+
 
 async def handle_model_error(ctx, error):
     if isinstance(error, ModelException):

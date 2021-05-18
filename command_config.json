@@ -20,5 +20,10 @@
     "classify_last": {
         "type": "MANUAL",
         "description": "Classifies the last uninterpreted command; valid classifications are the names of the INTERPRETED commands"
+    },
+
+    "skip": {
+        "type": "MANUAL",
+        "description": "Skips current song"
     }
 }

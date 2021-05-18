@@ -7,6 +7,7 @@ from exceptions import ModelException, handle_model_error
 import parsing
 import datacollector
 import itertools
+import musicservice
 
 
 
@@ -49,6 +50,11 @@ async def classify_last(ctx, classification):
     datacollector.check_classification(bot, classification)
     classified_message = datacollector.classify_last_uninterpreted_message(classification)
     await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
+
+
+@bot.command(description=config.description("skip"))
+async def skip(ctx):
+    await musicservice.INSTANCE.skip(ctx)
 
 
 # EVENTS #

@@ -1,7 +1,5 @@
 import json
 
-from discord.ext import commands
-
 
 with open("../bot_config.json", "r") as bot_config_file:
     BOT_CONFIG = json.load(bot_config_file)

@@ -1,6 +1,7 @@
 from datetime import datetime
 import datacollector
 from exceptions import MissingParameter
+import musicservice
 
 
 def undefined(command_message):
@@ -16,12 +17,13 @@ async def ping(ctx, *args):
     await ctx.send(f"Pong! Latency: {latency} ms")
 
 
+async def time(ctx, *args):
+    await ctx.send(f"Time: {datetime.now()}")
+
+
 async def play(ctx, *args):
     if len(args) == 0:
         raise MissingParameter("song_name")
 
-    await ctx.send(f"Playing \"{' '.join(args)}\"")
-
-
-async def time(ctx, *args):
-    await ctx.send(f"Time: {datetime.now()}")
+    song_name = ' '.join(args)
+    await musicservice.INSTANCE.play(ctx, song_name=song_name)
