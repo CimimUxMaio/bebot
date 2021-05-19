@@ -7,6 +7,6 @@ async def embeded_message(ctx, *, action=None, message, color=discord.Colour.blu
     embed = discord.Embed(description=complete_message, color=color) 
 
     if blame:
-        embed.set_footer(blame.mention)
+        embed.set_footer(icon_url=ctx.author.avatar_url, text=blame.display_name)
         
     await ctx.send(embed=embed)

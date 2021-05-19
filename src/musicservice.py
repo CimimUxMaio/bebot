@@ -27,7 +27,7 @@ class MusicService:
         
         song = self.search_yt(song_name=song_name)
         self.queue.append(song)
-        await utils.embeded_message(ctx, action="Queued", message=song["title"], color=discord.Colour.green())
+        await utils.embeded_message(ctx, action="Queued", message=song["title"], color=discord.Colour.green(), blame=ctx.author)
 
         if not self.is_playing():
             await self.play_next(ctx)
@@ -36,6 +36,7 @@ class MusicService:
     async def skip(self, ctx):
         if self.is_playing():
             await ctx.send("Song skipped!")
+            await ctx.message.add_reaction(u"\U0001F44C")
             self.voice_client.stop()
     
 
@@ -77,7 +78,7 @@ class MusicService:
 
         song = self.queue.pop(0)
         song_url = song["formats"][0]["url"]
-        await utils.embeded_message(ctx, message=f'Now playing: {song["title"]}')
+        await utils.embeded_message(ctx, action="Playing", message=song["title"])
         self.voice_client.play(FFmpegPCMAudio(song_url, **FFMPEG_OPTIONS))
 
         # Wait till finished
