@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.ext.commands.errors import CommandError
 from brain import BRAIN
 import config
-from exceptions import ModelException, handle_model_error
+from exceptions import ModelException
 import parsing
 import datacollector
 import itertools
