@@ -16,8 +16,8 @@ with open("../command_config.json", "r") as command_config_file:
 
 
 class CommandCategory(enum.Enum):
-    MANUAL = "MANUAL"
-    INTERPRETED = "INTERPRETED"
+    MANUAL = "Manual"
+    INTERPRETED = "Interpreted"
 
 
 def category_description(category: CommandCategory):

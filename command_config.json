@@ -1,5 +1,5 @@
 {
-    "INTERPRETED": {
+    "Interpreted": {
         "description": "The command can be interpreted by a given sentence. Command parameters must be given between '[]'",
         "commands": [
             {
@@ -22,7 +22,7 @@
         ]
     },
     
-    "MANUAL": {
+    "Manual": {
         "description": "The exact command name or alias should be passed for the command to work",
         "commands": [
             {

@@ -25,17 +25,19 @@ async def help(ctx):
 
     SEPARATOR = "\u200b"
 
-    for category in config.CommandCategory:
-        embed.add_field(name=category.value, value=config.category_description(category), inline=False)
+    last_category = len(config.CommandCategory) - 1 
+    for n, category in enumerate(config.CommandCategory):
+        embed.add_field(name=f"__{category.value}:__", value=f"_{config.category_description(category)}_", inline=False)
         for command in config.commands(category):
             command_namings = f"**{command['name']}**"
             command_parameters = ' '.join([f"<{param_name}>" for param_name in command["parameters"]])
             command_description = command["description"]
             field_title = '  '.join([command_namings, command_parameters])
             embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
-        embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
+        
+        if n != last_category:
+            embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
 
-    embed.set_footer(icon_url = ctx.author.avatar_url, text = f"Requested by {ctx.author.name}")
     await ctx.send(embed=embed)
 
 
