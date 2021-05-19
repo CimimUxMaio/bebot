@@ -1,29 +1,41 @@
 {
-    "time": {
-        "type": "INTERPRETED",
-        "parameters": [],
-        "description": "Returns the current server time and date"
+    "INTERPRETED": {
+        "description": "The command can be interpreted by a given sentence. Command parameters must be given between '[]'",
+        "commands": [
+            {
+                "name": "time",
+                "parameters": [],
+                "description": "Returns the current server time and date"
+            },
+    
+            {
+                "name": "ping",
+                "parameters": [],
+                "description": "Returns the senders latency against the discord server"
+            },
+    
+            {
+                "name": "play",
+                "parameters": ["song_name"],
+                "description": "Plays the given music / video"
+            }
+        ]
     },
-
-    "ping": {
-        "type": "INTERPRETED",
-        "parameters": [],
-        "description": "Returns the senders latency against the discord server"
-    },
-
-    "play": {
-        "type": "INTERPRETED",
-        "parameters": ["song_name"],
-        "description": "Plays the given music / video"
-    },
-
-    "classify_last": {
-        "type": "MANUAL",
-        "description": "Classifies the last uninterpreted command; valid classifications are the names of the INTERPRETED commands"
-    },
-
-    "skip": {
-        "type": "MANUAL",
-        "description": "Skips current song"
+    
+    "MANUAL": {
+        "description": "The exact command name or alias should be passed for the command to work",
+        "commands": [
+            {
+                "name": "teach_last",
+                "parameters": ["classification"],
+                "description": "Classifies the last uninterpreted command"
+            },
+    
+            {
+                "name": "skip",
+                "parameters": [],
+                "description": "Skips current song"
+            }
+        ]
     }
 }

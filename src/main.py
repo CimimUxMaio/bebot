@@ -18,7 +18,7 @@ bot.remove_command("help")
 
 # MANUAL COMMANDS #
 
-@bot.command(aliases=["h"], description="Shows this message")
+@bot.command(aliases=["h"])
 async def help(ctx):
     embed = discord.Embed(title="Help", color = discord.Colour.blue())
 
@@ -38,10 +38,9 @@ async def help(ctx):
     await ctx.send(embed=embed)
 
 
-@bot.command(aliases=["cl"])
-async def classify_last(ctx, classification):
-    datacollector.check_classification(bot, classification)
-    classified_message = datacollector.classify_last_uninterpreted_message(classification)
+@bot.command(aliases=["tl"])
+async def teach_last(ctx, classification):
+    classified_message = datacollector.classify_last_message(classification)
     await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
 
 
@@ -90,6 +89,7 @@ async def on_message(message):
         return
 
     command_message, parameters = parsing.parse_message(without_prefix)
+    datacollector.set_last_message(command_message)
     command = BRAIN.identify_command(command_message)
     ctx = await bot.get_context(message)
     try:

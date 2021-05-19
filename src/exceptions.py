@@ -13,11 +13,6 @@ class LastUninterpretedCommandMessageMissing(ModelException):
         super().__init__("Last uninterpreted command message is missing or has already been classified")
 
 
-class InvalidClassification(ModelException):
-    def __init__(self, invalid_classification):
-        super().__init__(f"\"{invalid_classification}\" is not a valid command classification")
-
-
 class InvalidSongName(ModelException):
     def __init__(self, song_name):
         super().__init__(f"Could not download the song: {song_name}. Incorrect format try another. This could be due to it being in playlist or livestream format")

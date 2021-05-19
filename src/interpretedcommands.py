@@ -1,14 +1,11 @@
 from datetime import datetime
-import datacollector
 from exceptions import MissingParameter
 import musicservice
 
 
 def undefined(command_message):
     async def f(ctx, *args):
-        datacollector.set_last_uninterpreted_message(command_message)
         await ctx.send(f"Couldn't resolve \"{command_message}\" to a valid command")
-
     return f
 
 
