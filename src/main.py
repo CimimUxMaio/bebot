@@ -100,9 +100,9 @@ async def on_message(message):
 
     command_message, parameters = parsing.parse_message(without_prefix)
     datacollector.set_last_message(command_message)
-    command = BRAIN.identify_command(command_message)
     ctx = await bot.get_context(message)
     try:
+        command = BRAIN.identify_command(command_message)
         await command(ctx, *parameters)
     except ModelException as error:
         await handle_error(ctx, error)
