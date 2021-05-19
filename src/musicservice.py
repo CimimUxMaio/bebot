@@ -21,7 +21,7 @@ class MusicService:
     async def play(self, ctx, *, song_name: str):
         voice = ctx.author.voice
         if not voice:
-            raise Exception("User not connected to a voice channel")
+            raise exceptions.UserNotConnectedToVoiceChannel()
 
         await self.connect_or_move_to(channel=voice.channel)
         

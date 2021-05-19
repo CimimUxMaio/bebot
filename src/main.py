@@ -57,6 +57,10 @@ def is_manual_command(command_name):
     return command_name in manual_commands
 
 
+async def handle_error(ctx, error):
+    await utils.embeded_message(ctx, action="Error", message=str(error), color=discord.Colour.red())
+
+
 @bot.event
 async def on_command_error(ctx, error):
     original_error = error
@@ -65,7 +69,7 @@ async def on_command_error(ctx, error):
         original_error = error.original
         
     if isinstance(original_error, ModelException) or isinstance(original_error, CommandError):
-        utils.embeded_message(ctx, action="Error", message=str(original_error), color=discord.Colour.red())
+        handle_error(ctx, original_error)
         return
 
     raise error
@@ -97,7 +101,7 @@ async def on_message(message):
     try:
         await command(ctx, *parameters)
     except ModelException as error:
-        await handle_model_error(ctx, error)
+        await handle_error(ctx, error)
 
 
 if __name__ == "__main__":
