@@ -24,35 +24,28 @@ async def help(ctx):
 
     SEPARATOR = "\u200b"
 
-    embed.add_field(name="INTERPRETED", value="The command can be interpreted by a given sentence. Command parameters must be given between '[]'", inline=False)
-    for name, info in config.interpreted_commands().items():
-        command_namings = f"**{name}**"
-        command_parameters = ' '.join([f"<{param_name}>" for param_name in info["parameters"]])
-        command_description = info["description"]
-        field_title = '  '.join([command_namings, command_parameters])
-        embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
+    for category in config.CommandCategory:
+        embed.add_field(name=category.value, value=config.category_description(category), inline=False)
+        for command in config.commands(category):
+            command_namings = f"**{command['name']}**"
+            command_parameters = ' '.join([f"<{param_name}>" for param_name in command["parameters"]])
+            command_description = command["description"]
+            field_title = '  '.join([command_namings, command_parameters])
+            embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
+        embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
 
-    embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
-    embed.add_field(name="MANUAL", value="The exact command name or alias should be passed for the command to work", inline=False)
-    for cmd in bot.commands:
-        command_namings = f"**{cmd.name}**" + "".join([f" | {alias}" for alias in cmd.aliases])
-        command_parameters = ' '.join([f"<{param_name}>" for param_name in cmd.clean_params.keys()])
-        command_description = cmd.description
-        field_title = '  '.join([command_namings, command_parameters])
-        embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
-        
     embed.set_footer(icon_url = ctx.author.avatar_url, text = f"Requested by {ctx.author.name}")
     await ctx.send(embed=embed)
 
 
-@bot.command(aliases=["cl"], description=config.description("classify_last"))
+@bot.command(aliases=["cl"])
 async def classify_last(ctx, classification):
     datacollector.check_classification(bot, classification)
     classified_message = datacollector.classify_last_uninterpreted_message(classification)
     await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
 
 
-@bot.command(description=config.description("skip"))
+@bot.command()
 async def skip(ctx):
     await musicservice.INSTANCE.skip(ctx)
 

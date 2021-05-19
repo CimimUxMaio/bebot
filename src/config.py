@@ -1,4 +1,6 @@
 import json
+import enum
+from token import COMMA
 
 
 with open("../bot_config.json", "r") as bot_config_file:
@@ -13,9 +15,19 @@ with open("../command_config.json", "r") as command_config_file:
     COMMAND_CONFIG = json.load(command_config_file)
 
 
-def description(command_name):
-    return f'{COMMAND_CONFIG[command_name]["description"]}'
+class CommandCategory(enum.Enum):
+    MANUAL = "MANUAL"
+    INTERPRETED = "INTERPRETED"
 
+
+def category_description(category: CommandCategory):
+    return COMMAND_CONFIG[category.value]["description"]
+
+def commands(category: CommandCategory):
+    return [ cmd for cmd in COMMAND_CONFIG[category.value]["commands"] ]
 
 def interpreted_commands():
-    return { command_name: info for command_name, info in COMMAND_CONFIG.items() if info["type"] == "INTERPRETED" }
+    return commands(CommandCategory.INTERPRETED)
+
+def manual_commands():
+    return commands(CommandCategory.MANUAL)

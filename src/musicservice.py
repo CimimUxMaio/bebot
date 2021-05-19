@@ -37,6 +37,11 @@ class MusicService:
             self.voice_client.stop()
     
 
+    async def songs_queued(self, ctx):
+        song_titles = [ song["title"] for song in self.queue ]
+        message = '\n'.join(song_titles)
+        ctx.send(message)
+
     # PRIVATE #
 
     def is_playing(self):
@@ -76,6 +81,11 @@ class MusicService:
             await asyncio.sleep(1)
 
         await self.play_next(ctx)
+
+
+    async def leave(self, ctx):
+        await ctx.send("Bye bye")
+        await self.voice_client.disconnect()
 
 
 INSTANCE: MusicService = MusicService()
