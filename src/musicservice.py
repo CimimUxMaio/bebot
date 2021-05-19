@@ -1,4 +1,5 @@
 from discord import VoiceClient, FFmpegPCMAudio
+import discord
 from youtube_dl import YoutubeDL
 import exceptions
 import asyncio
@@ -25,7 +26,7 @@ class MusicService:
         
         song = self.search_yt(song_name=song_name)
         self.queue.append(song)
-        await ctx.send(f"Queued: {song['title']}")
+        await self.embeded_message(ctx, action="Queued", message=song["title"])
 
         if not self.is_playing():
             await self.play_next(ctx)
@@ -40,7 +41,7 @@ class MusicService:
     async def songs_queued(self, ctx):
         song_titles = [ song["title"] for song in self.queue ]
         message = '\n'.join(song_titles)
-        ctx.send(message)
+        await self.embeded_message(ctx, message=message)
 
     # PRIVATE #
 
@@ -70,11 +71,13 @@ class MusicService:
 
     async def play_next(self, ctx):
         if self.empty_queue():
+            await self.leave(ctx)
             return
 
         song = self.queue.pop(0)
-        await ctx.send(f'Now playing: {song["title"]}')
-        self.voice_client.play(FFmpegPCMAudio(song["formats"][0]["url"], **FFMPEG_OPTIONS))
+        song_url = song["formats"][0]["url"]
+        await self.embeded_message(ctx, message=f'Now playing: {song["title"]}')
+        self.voice_client.play(FFmpegPCMAudio(song_url, **FFMPEG_OPTIONS))
 
         # Wait till finished
         while self.is_playing():
@@ -87,5 +90,12 @@ class MusicService:
         await ctx.send("Bye bye")
         await self.voice_client.disconnect()
 
+    async def embeded_message(self, ctx, *, action=None, message):
+        premessage = f"**{action}:** " if action else ""
+        complete_message = premessage + message
+        embed = discord.Embed(description=complete_message) 
+        await ctx.send(embed=embed)
+
+        
 
 INSTANCE: MusicService = MusicService()
