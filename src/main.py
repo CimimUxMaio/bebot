@@ -7,8 +7,8 @@ from exceptions import ModelException
 import parsing
 import datacollector
 import itertools
-import musicservice
 import utils
+import guildmanager
 
 
 
@@ -51,7 +51,8 @@ async def teach_last(ctx, classification):
 
 @bot.command()
 async def skip(ctx):
-    await musicservice.INSTANCE.skip(ctx)
+    musicservice = guildmanager.get_state(ctx.guild.id).music_service
+    await musicservice.skip(ctx)
 
 
 # EVENTS #
@@ -81,8 +82,16 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_ready():
+    for guild in bot.guilds:
+        guildmanager.register(guild_id=guild.id)
+
     print("Bot ready!")
 
+
+@bot.event
+async def on_guild_join(guild):
+    guildmanager.register(guild_id=guild.id)
+    
 
 @bot.event
 async def on_message(message):

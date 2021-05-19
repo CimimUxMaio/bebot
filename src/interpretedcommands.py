@@ -1,7 +1,6 @@
 from datetime import datetime
 from exceptions import MissingParameter
-import musicservice
-
+import guildmanager
 
 async def ping(ctx, *args):
     latency = (datetime.utcnow() - ctx.message.created_at).total_seconds() * 1000
@@ -17,7 +16,8 @@ async def play(ctx, *args):
         raise MissingParameter("song_name")
 
     song_name = ' '.join(args)
-    await musicservice.INSTANCE.play(ctx, song_name=song_name)
+    musicservice = guildmanager.get_state(ctx.guild.id).music_service
+    await musicservice.play(ctx, song_name=song_name)
 
 
 COMMAND_MAPPINGS = {

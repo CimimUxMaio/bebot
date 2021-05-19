@@ -13,7 +13,6 @@ FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconne
 class MusicService:
     def __init__(self):
         self.voice_client: VoiceClient = None
-
         self.queue = []
 
     # INTERFACE #
@@ -91,6 +90,3 @@ class MusicService:
     async def leave(self, ctx):
         await ctx.send("Bye bye")
         await self.voice_client.disconnect()
-
-
-INSTANCE: MusicService = MusicService()
