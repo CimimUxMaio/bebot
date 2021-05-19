@@ -1,4 +1,5 @@
 import tensorflow as tf
+import exceptions
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import numpy as np
@@ -28,8 +29,7 @@ class __Brain:
         
         if prediction[best_index] < 0.5:
             print([ round(p, 2) for p in prediction.numpy() ])
-            return icommands.undefined(message)
-
+            raise exceptions.CommandIterpretationException(message)
         return self.__COMMAND_MAPPINGS[best_index]
 
 
