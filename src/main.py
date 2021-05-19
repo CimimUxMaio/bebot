@@ -29,7 +29,9 @@ async def help(ctx):
     for n, category in enumerate(config.CommandCategory):
         embed.add_field(name=f"__{category.value}:__", value=f"_{config.category_description(category)}_", inline=False)
         for command in config.commands(category):
-            command_namings = f"**{command['name']}**"
+            manual_cmd = bot.get_command(command["name"])
+            aliases = manual_cmd.aliases if manual_cmd else []
+            command_namings = f"**{command['name']} { '|' if aliases else ''} {' | '.join(aliases)}**"
             command_parameters = ' '.join([f"<{param_name}>" for param_name in command["parameters"]])
             command_description = command["description"]
             field_title = '  '.join([command_namings, command_parameters])
