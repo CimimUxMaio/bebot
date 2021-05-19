@@ -39,10 +39,11 @@ class MusicService:
             self.voice_client.stop()
     
 
-    async def songs_queued(self, ctx):
+    async def queued_songs(self, ctx):
         song_titles = [ song["title"] for song in self.queue ]
         message = '\n'.join(song_titles)
-        await utils.embeded_message(ctx, message=message)
+        await utils.embeded_message(ctx, message=message if message else "Queue is empty")
+
 
     # PRIVATE #
 

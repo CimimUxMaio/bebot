@@ -35,6 +35,12 @@
                 "name": "skip",
                 "parameters": [],
                 "description": "Skips current song"
+            },
+
+            {
+                "name": "queue",
+                "parameters": [],
+                "description": "Displays the current music queue"
             }
         ]
     }
