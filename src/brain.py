@@ -16,12 +16,6 @@ class __Brain:
         with open("../NeuralNetwork/word_index.pkl", "rb") as word_index_file:
             self.__word_index = pickle.load(word_index_file)
 
-        self.__COMMAND_MAPPINGS = {
-            0: icommands.ping,
-            1: icommands.time,
-            2: icommands.play
-        }
-
 
     def identify_command(self, message):
         encoded_message = self.__encode_message(message)
@@ -29,9 +23,8 @@ class __Brain:
         best_index = np.argmax(prediction)
         
         if prediction[best_index] < config.MIN_CONFIDENCE:
-            print([ round(p, 2) for p in prediction.numpy() ])
             raise exceptions.CommandIterpretationException(message)
-        return self.__COMMAND_MAPPINGS[best_index]
+        return icommands.COMMAND_MAPPINGS[best_index]
 
 
     def __normalize_message(self, message):

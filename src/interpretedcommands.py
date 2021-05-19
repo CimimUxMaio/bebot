@@ -18,3 +18,10 @@ async def play(ctx, *args):
 
     song_name = ' '.join(args)
     await musicservice.INSTANCE.play(ctx, song_name=song_name)
+
+
+COMMAND_MAPPINGS = {
+    0: ping,
+    1: time,
+    2: play
+}
