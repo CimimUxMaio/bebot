@@ -8,6 +8,7 @@ import parsing
 import datacollector
 import itertools
 import musicservice
+import utils
 
 
 
@@ -58,12 +59,13 @@ def is_manual_command(command_name):
 
 @bot.event
 async def on_command_error(ctx, error):
-    if hasattr(error, "original"):
-        await handle_model_error(ctx, error.original)
-        return 
+    original_error = error
 
-    elif isinstance(error, CommandError):
-        await ctx.send(str(error))
+    if hasattr(error, "original"):
+        original_error = error.original
+        
+    if isinstance(original_error, ModelException) or isinstance(original_error, CommandError):
+        utils.embeded_message(ctx, action="Error", message=str(original_error), color=discord.Colour.red())
         return
 
     raise error

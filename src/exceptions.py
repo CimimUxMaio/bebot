@@ -26,9 +26,3 @@ class UserNotConnectedToVoiceChannel(ModelException):
 class CommandIterpretationException(ModelException):
     def __init__(self, command_message):
         super().__init__(f"Couldn't resolve \"{command_message}\" to a valid command")
-
-
-async def handle_model_error(ctx, error):
-    if isinstance(error, ModelException):
-        await ctx.send(str(error))
-    
