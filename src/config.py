@@ -31,3 +31,9 @@ def interpreted_commands():
 
 def manual_commands():
     return commands(CommandCategory.MANUAL)
+
+
+with open("../brain_config.json", "r") as brain_config_file:
+    BRAIN_CONFIG = json.load(brain_config_file)
+
+MIN_CONFIDENCE = BRAIN_CONFIG["minConfidence"]

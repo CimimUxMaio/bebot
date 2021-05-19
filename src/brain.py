@@ -7,6 +7,7 @@ import pickle
 from unidecode import unidecode
 import re
 import interpretedcommands as icommands
+import config
 
 
 class __Brain:
@@ -27,7 +28,7 @@ class __Brain:
         prediction = tf.reshape(self.__model.predict(encoded_message), [-1])
         best_index = np.argmax(prediction)
         
-        if prediction[best_index] < 0.5:
+        if prediction[best_index] < config.MIN_CONFIDENCE:
             print([ round(p, 2) for p in prediction.numpy() ])
             raise exceptions.CommandIterpretationException(message)
         return self.__COMMAND_MAPPINGS[best_index]
