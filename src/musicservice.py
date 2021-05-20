@@ -1,3 +1,4 @@
+from collections import namedtuple
 from discord import VoiceClient, FFmpegPCMAudio
 import discord
 from youtube_dl import YoutubeDL
@@ -9,6 +10,7 @@ import asyncio
 YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
+Song = namedtuple("Song", "title url duration")
 
 class MusicService:
     def __init__(self):
@@ -26,7 +28,7 @@ class MusicService:
         
         song = self.search_yt(song_name=song_name)
         self.queue.append(song)
-        await utils.embeded_message(ctx, action="Queued", message=song["title"], color=discord.Colour.green(), blame=ctx.author)
+        await utils.embeded_message(ctx, action="Queued", message=self.song_description(song), color=discord.Colour.green(), blame=ctx.author)
 
         if not self.is_playing():
             await self.play_next(ctx)
@@ -40,7 +42,7 @@ class MusicService:
     
 
     async def queued_songs(self, ctx):
-        song_titles = [ song["title"] for song in self.queue ]
+        song_titles = [ f"{i}. {self.song_description(song)}" for i, song in enumerate(self.queue, start = 1)]
         message = '\n'.join(song_titles)
         await utils.embeded_message(ctx, message=message if message else "Queue is empty")
 
@@ -60,7 +62,7 @@ class MusicService:
             except:
                 raise exceptions.InvalidSongName(song_name)
 
-        return song
+        return Song(song["title"], song["url"], song["duration"])
 
     async def connect_or_move_to(self, *, channel):
         if self.voice_client is None:
@@ -77,9 +79,8 @@ class MusicService:
             return
 
         song = self.queue.pop(0)
-        song_url = song["formats"][0]["url"]
-        await utils.embeded_message(ctx, action="Playing", message=song["title"])
-        self.voice_client.play(FFmpegPCMAudio(song_url, **FFMPEG_OPTIONS))
+        await utils.embeded_message(ctx, action="Playing", message=self.song_description(song))
+        self.voice_client.play(FFmpegPCMAudio(song.url, **FFMPEG_OPTIONS))
 
         # Wait till finished
         while self.is_playing():
@@ -91,3 +92,9 @@ class MusicService:
     async def leave(self, ctx):
         await ctx.send("Bye bye")
         await self.voice_client.disconnect()
+
+
+    def song_description(self, song):
+        minutes = int(song.duration / 60)
+        seconds = song.duration % 60
+        return f"[{song.title}]({song.url}) -> {minutes}:{seconds}"
