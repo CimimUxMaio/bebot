@@ -10,7 +10,7 @@ import asyncio
 YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
-Song = namedtuple("Song", "title url duration")
+Song = namedtuple("Song", "title audio_url yt_url duration")
 
 class MusicService:
     def __init__(self):
@@ -62,7 +62,8 @@ class MusicService:
             except:
                 raise exceptions.InvalidSongName(song_name)
 
-        return Song(song["title"], song["url"], song["duration"])
+        yt_url = f"https://www.youtube.com/watch?v={song['id']}"
+        return Song(song["title"], song["url"], yt_url, song["duration"])
 
     async def connect_or_move_to(self, *, channel):
         if self.voice_client is None:
@@ -80,7 +81,7 @@ class MusicService:
 
         song = self.queue.pop(0)
         await utils.embeded_message(ctx, action="Playing", message=self.song_description(song))
-        self.voice_client.play(FFmpegPCMAudio(song.url, **FFMPEG_OPTIONS))
+        self.voice_client.play(FFmpegPCMAudio(song.audio_url, **FFMPEG_OPTIONS))
 
         # Wait till finished
         while self.is_playing():
@@ -97,4 +98,4 @@ class MusicService:
     def song_description(self, song):
         minutes = int(song.duration / 60)
         seconds = song.duration % 60
-        return f"[{song.title}]({song.url}) -> {minutes}:{seconds}"
+        return f"[{song.title}]({song.yt_url}) -> {minutes}:{seconds}"
