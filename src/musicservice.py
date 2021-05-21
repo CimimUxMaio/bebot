@@ -1,4 +1,5 @@
 from collections import namedtuple
+import threading
 from discord import VoiceClient, FFmpegPCMAudio
 import discord
 from youtube_dl import YoutubeDL
@@ -19,7 +20,7 @@ class MusicService:
 
     # INTERFACE #
 
-    async def play(self, ctx, *, song_name: str):
+    async def play(self, ctx, *, song_names: list):
         voice = ctx.author.voice
         if not voice:
             raise exceptions.UserNotConnectedToVoiceChannel()
@@ -27,12 +28,11 @@ class MusicService:
         if not self.is_connected_to(voice.channel):
             await self.connect_or_move_to(channel=voice.channel)
         
-        song = self.search_yt(song_name=song_name)
-        self.queue.append(song)
-        await utils.embeded_message(ctx, action="Queued", message=self.song_description(song), color=discord.Colour.green(), blame=ctx.author)
-
+        for song_name in song_names:
+            self.add_song(ctx, song_name)
+            
         if not self.is_playing():
-            await self.play_next(ctx)
+            self.play_next(ctx)
 
 
     async def skip(self, ctx):
@@ -43,7 +43,7 @@ class MusicService:
     
 
     async def queued_songs(self, ctx):
-        song_titles = [ f"{i}. {self.song_description(song)}" for i, song in enumerate(self.queue, start = 1)]
+        song_titles = [ f"{i}. {self.song_description(song)}" for i, song in enumerate(self.queue, start = 1) ]
         message = '\n'.join(song_titles)
         await utils.embeded_message(ctx, message=message if message else "Queue is empty")
 
@@ -110,3 +110,10 @@ class MusicService:
             return f"0{n}" if n < 10 else str(n)
 
         return f"[{song.title}]({song.yt_url}) -> {padd(hours)}:{padd(minutes)}:{padd(seconds)}"
+
+
+    async def add_song(self, ctx, song_name):
+        song = self.search_yt(song_name=song_name)
+        self.queue.append(song)
+        await utils.embeded_message(ctx, action="Queued", message=self.song_description(song), color=discord.Colour.green(), blame=ctx.author)
+

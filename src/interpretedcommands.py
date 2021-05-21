@@ -15,9 +15,8 @@ async def play(ctx, *args):
     if len(args) == 0:
         raise MissingParameter("song_name")
 
-    song_name = ' '.join(args)
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.play(ctx, song_name=song_name)
+    await musicservice.play(ctx, song_names=args)
 
 
 COMMAND_MAPPINGS = {
