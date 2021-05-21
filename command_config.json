@@ -1,6 +1,6 @@
 {
     "Interpreted": {
-        "description": "The command can be interpreted by a given sentence. Command parameters must be given between '[]'",
+        "description": "The command can be interpreted by a given sentence. Command parameters must be given between '\"'",
         "commands": [
             {
                 "name": "time",
