@@ -102,7 +102,11 @@ class MusicService:
 
 
     def song_description(self, song):
+        hours = int(song.duration / 3600)
         minutes = int(song.duration / 60)
         seconds = song.duration % 60
-        padded_seconds = f"0{seconds}" if seconds < 10 else str(seconds)
-        return f"[{song.title}]({song.yt_url}) -> {minutes}:{padded_seconds}"
+
+        def padd(n):
+            return f"0{n}" if n < 10 else str(n)
+
+        return f"[{song.title}]({song.yt_url}) -> {padd(hours)}:{padd(minutes)}:{padd(seconds)}"
