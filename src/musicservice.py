@@ -29,10 +29,10 @@ class MusicService:
             await self.connect_or_move_to(channel=voice.channel)
         
         for song_name in song_names:
-            self.add_song(ctx, song_name)
+            await self.add_song(ctx, song_name)
             
         if not self.is_playing():
-            self.play_next(ctx)
+            await self.play_next(ctx)
 
 
     async def skip(self, ctx):
@@ -86,7 +86,7 @@ class MusicService:
             return
 
         song = self.queue.pop(0)
-        await utils.embeded_message(ctx, action="Playing", message=self.song_description(song))
+        await utils.embeded_message(ctx, action="Playing", message=self.song_description(song), blame=ctx.author)
         self.voice_client.play(FFmpegPCMAudio(song.audio_url, **FFMPEG_OPTIONS))
 
         # Wait till finished
@@ -115,5 +115,5 @@ class MusicService:
     async def add_song(self, ctx, song_name):
         song = self.search_yt(song_name=song_name)
         self.queue.append(song)
-        await utils.embeded_message(ctx, action="Queued", message=self.song_description(song), color=discord.Colour.green(), blame=ctx.author)
+        await utils.embeded_message(ctx, action="Queued", message=self.song_description(song), color=discord.Colour.green())
 
