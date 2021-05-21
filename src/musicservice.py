@@ -24,7 +24,8 @@ class MusicService:
         if not voice:
             raise exceptions.UserNotConnectedToVoiceChannel()
 
-        await self.connect_or_move_to(channel=voice.channel)
+        if not self.is_connected_to(voice.channel):
+            await self.connect_or_move_to(channel=voice.channel)
         
         song = self.search_yt(song_name=song_name)
         self.queue.append(song)
@@ -52,8 +53,10 @@ class MusicService:
     def is_playing(self):
         return self.voice_client is not None and self.voice_client.is_playing()
 
+
     def is_connected_to(self, channel):
-        return self.voice_client.is_connected() and self.voice_client.channel == channel
+        return self.voice_client is not None and self.voice_client.channel == channel and self.voice_client.is_connected()
+
 
     def search_yt(self, *, song_name):
         with YoutubeDL(YDL_OPTIONS) as ydl:
@@ -65,14 +68,17 @@ class MusicService:
         yt_url = f"https://www.youtube.com/watch?v={song['id']}"
         return Song(song["title"], song["url"], yt_url, song["duration"])
 
+
     async def connect_or_move_to(self, *, channel):
-        if self.voice_client is None:
+        if self.voice_client is None or not self.voice_client.is_connected():
             self.voice_client = await channel.connect()
-        elif not self.is_connected_to(channel):
+        else:
             self.voice_client.move_to(channel)
 
+        
     def empty_queue(self):
         return not self.queue
+
 
     async def play_next(self, ctx):
         if self.empty_queue():
