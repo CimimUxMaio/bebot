@@ -3,21 +3,21 @@
         "description": "The command can be interpreted by a given sentence. Command parameters must be given between '\"'",
         "commands": [
             {
-                "name": "time",
-                "parameters": [],
-                "description": "Returns the current server time and date"
-            },
-    
-            {
-                "name": "ping",
-                "parameters": [],
-                "description": "Returns the senders latency against the discord server"
-            },
-    
-            {
                 "name": "play",
                 "parameters": ["song_name"],
                 "description": "Plays the given music / video"
+            },
+
+            {
+                "name": "skip",
+                "parameters": [],
+                "description": "Skips current song"
+            },
+
+            {
+                "name": "queue",
+                "parameters": [],
+                "description": "Displays the current music queue"
             }
         ]
     },
@@ -29,18 +29,6 @@
                 "name": "teach_last",
                 "parameters": ["classification"],
                 "description": "Classifies the last uninterpreted command"
-            },
-    
-            {
-                "name": "skip",
-                "parameters": [],
-                "description": "Skips current song"
-            },
-
-            {
-                "name": "queue",
-                "parameters": [],
-                "description": "Displays the current music queue"
             }
         ]
     }

@@ -49,17 +49,6 @@ async def teach_last(ctx, classification):
     await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
 
 
-@bot.command()
-async def skip(ctx):
-    musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.skip(ctx)
-
-@bot.command(aliases=["q"])
-async def queue(ctx):
-    musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.show_queue(ctx)
-
-
 # EVENTS #
 
 def is_manual_command(command_name):
