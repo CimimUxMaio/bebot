@@ -6,7 +6,6 @@ import numpy as np
 import pickle
 from unidecode import unidecode
 import re
-import interpretedcommands as icommands
 import config
 
 
@@ -24,7 +23,7 @@ class __Brain:
         
         if prediction[best_index] < config.MIN_CONFIDENCE:
             raise exceptions.CommandIterpretationException(message)
-        return icommands.COMMAND_MAPPINGS[best_index]
+        return config.COMMAND_MAPPINGS[best_index]
 
 
     def __normalize_message(self, message):

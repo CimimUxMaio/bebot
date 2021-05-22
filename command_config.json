@@ -1,35 +1,35 @@
 {
-    "Interpreted": {
-        "description": "The command can be interpreted by a given sentence. Command parameters must be given between '\"'",
-        "commands": [
-            {
-                "name": "play",
-                "parameters": ["song_name"],
-                "description": "Plays the given music / video"
-            },
+    "paramWrappers": ["\"", "\""],
 
-            {
-                "name": "skip",
-                "parameters": [],
-                "description": "Skips current song"
-            },
-
-            {
-                "name": "queue",
-                "parameters": [],
-                "description": "Displays the current music queue"
-            }
-        ]
+    "categories": {
+        "interpreted": "The command can be interpreted by a given sentence. Command parameters must be given between ",
+        "manual": "The exact command name or alias should be passed for the command to work"
     },
-    
-    "Manual": {
-        "description": "The exact command name or alias should be passed for the command to work",
-        "commands": [
-            {
-                "name": "teach_last",
-                "parameters": ["classification"],
-                "description": "Classifies the last uninterpreted command"
-            }
-        ]
+
+    "commands": {
+      "play": {
+        "parameters": ["song_name"],
+        "description": "Plays the given music / video"
+      },
+
+      "skip": {
+        "parameters": [],
+        "description": "Skips current song"
+      },
+
+      "queue": {
+        "parameters": [],
+        "description": "Displays the current music queue"
+      },
+
+      "teach_last": {
+        "parameters": ["classification"],
+        "description": "Classifies the last uninterpreted command"
+      },
+
+      "help": {
+        "parameters": [],
+        "description": "Shows this message"
+      }
     }
 }

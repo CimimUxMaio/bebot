@@ -3,13 +3,13 @@ from discord.ext import commands
 from discord.ext.commands.errors import CommandError
 from brain import BRAIN
 import config
-from exceptions import ModelException
+from exceptions import ModelException, MissingParameter
 import parsing
 import datacollector
 import itertools
 import utils
 import guildmanager
-
+from commandmanager import INSTANCE as icmd_manager
 
 
 PREFIX = config.BOT_PREFIX
@@ -25,20 +25,24 @@ async def help(ctx):
 
     SEPARATOR = "\u200b"
 
-    last_category = len(config.CommandCategory) - 1 
-    for n, category in enumerate(config.CommandCategory):
-        embed.add_field(name=f"__{category.value}:__", value=f"_{config.category_description(category)}_", inline=False)
-        for command in config.commands(category):
-            manual_cmd = bot.get_command(command["name"])
-            aliases = manual_cmd.aliases if manual_cmd else []
-            command_namings = f"**{command['name']} { '|' if aliases else ''} {' | '.join(aliases)}**"
-            command_parameters = ' '.join([f"<{param_name}>" for param_name in command["parameters"]])
-            command_description = command["description"]
-            field_title = '  '.join([command_namings, command_parameters])
-            embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
-        
-        if n != last_category:
-            embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
+    embed.add_field(name="__Manual__", value=f"_{config.category_description('manual')}_", inline=False)
+    for manual_cmd in bot.commands:
+        aliases = manual_cmd.aliases
+        info = config.command_info(manual_cmd.name)
+        command_namings = f"**{manual_cmd.name} { '|' if aliases else ''} {' | '.join(aliases)}**"
+        command_parameters = ' '.join([f"<{param_name}>" for param_name in info["parameters"]])
+        command_description = info["description"]
+        field_title = '  '.join([command_namings, command_parameters])
+        embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
+
+    embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
+    embed.add_field(name="__Interpreted__", value=f"_{config.category_description('interpreted')}_", inline=False)
+    for command in icmd_manager.commands.values():
+        command_namings = f"**{command.name}**"
+        command_parameters = ' '.join([f"<{param_name}>" for param_name in command.parameters])
+        command_description = command.description
+        field_title = '  '.join([command_namings, command_parameters])
+        embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
 
     await ctx.send(embed=embed)
 
@@ -47,6 +51,29 @@ async def help(ctx):
 async def teach_last(ctx, classification):
     classified_message = datacollector.classify_last_message(classification)
     await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
+
+
+# INTERPRETED COMMANDS #
+
+@icmd_manager.icommand(**config.command_info("skip"))
+async def skip(ctx):
+    musicservice = guildmanager.get_state(ctx.guild.id).music_service
+    await musicservice.skip(ctx)
+
+
+@icmd_manager.icommand(**config.command_info("queue"))
+async def queue(ctx):
+    musicservice = guildmanager.get_state(ctx.guild.id).music_service
+    await musicservice.show_queue(ctx)
+
+
+@icmd_manager.icommand(**config.command_info("play"))
+async def play(ctx, *args):
+    if len(args) == 0:
+        raise MissingParameter("song_name")
+
+    musicservice = guildmanager.get_state(ctx.guild.id).music_service
+    await musicservice.play(ctx, song_names=args)
 
 
 # EVENTS #
@@ -105,8 +132,8 @@ async def on_message(message):
     datacollector.set_last_message(command_message)
     ctx = await bot.get_context(message)
     try:
-        command = BRAIN.identify_command(command_message)
-        await command(ctx, *parameters)
+        cmd_name = BRAIN.identify_command(command_message)
+        await icmd_manager[cmd_name](ctx, *parameters)
     except ModelException as error:
         await handle_error(ctx, error)
 

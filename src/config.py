@@ -1,39 +1,31 @@
 import json
 import enum
-from token import COMMA
+
+
+with open("../private_config.json", "r") as private_config_file:
+    PRIVATE_CONFIG = json.load(private_config_file)
+
+BOT_TOKEN = PRIVATE_CONFIG["botToken"]
 
 
 with open("../bot_config.json", "r") as bot_config_file:
     BOT_CONFIG = json.load(bot_config_file)
 
-
-BOT_TOKEN = BOT_CONFIG["botToken"]
 BOT_PREFIX = BOT_CONFIG["prefix"]
 
 
 with open("../command_config.json", "r") as command_config_file:
     COMMAND_CONFIG = json.load(command_config_file)
 
+def category_description(category):
+    return COMMAND_CONFIG["categories"][category]
 
-class CommandCategory(enum.Enum):
-    MANUAL = "Manual"
-    INTERPRETED = "Interpreted"
-
-
-def category_description(category: CommandCategory):
-    return COMMAND_CONFIG[category.value]["description"]
-
-def commands(category: CommandCategory):
-    return [ cmd for cmd in COMMAND_CONFIG[category.value]["commands"] ]
-
-def interpreted_commands():
-    return commands(CommandCategory.INTERPRETED)
-
-def manual_commands():
-    return commands(CommandCategory.MANUAL)
+def command_info(command_name):
+    return COMMAND_CONFIG["commands"][command_name]
 
 
 with open("../brain_config.json", "r") as brain_config_file:
     BRAIN_CONFIG = json.load(brain_config_file)
 
 MIN_CONFIDENCE = BRAIN_CONFIG["minConfidence"]
+COMMAND_MAPPINGS = { int(k): cmd_name for k, cmd_name in BRAIN_CONFIG["commandMappings"].items() }
