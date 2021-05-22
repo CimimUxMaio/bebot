@@ -57,7 +57,7 @@ async def skip(ctx):
 @bot.command(aliases=["q"])
 async def queue(ctx):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.queued_songs(ctx)
+    await musicservice.show_queue(ctx)
 
 
 # EVENTS #

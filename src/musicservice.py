@@ -16,7 +16,7 @@ Song = namedtuple("Song", "title audio_url yt_url duration")
 class MusicService:
     def __init__(self):
         self.voice_client: VoiceClient = None
-        self.queue = []
+        self._queue = []
 
     # INTERFACE #
 
@@ -32,7 +32,7 @@ class MusicService:
             await self.add_song(ctx, song_name)
             
         if not self.is_playing():
-            await self.play_next(ctx)
+            await self.play_loop(ctx)
 
 
     async def skip(self, ctx):
@@ -42,8 +42,8 @@ class MusicService:
             self.voice_client.stop()
     
 
-    async def queued_songs(self, ctx):
-        song_titles = [ f"{i}. {self.song_description(song)}" for i, song in enumerate(self.queue, start = 1) ]
+    async def show_queue(self, ctx):
+        song_titles = [ f"{i}. {self.song_description(song)}" for i, song in enumerate(self._queue, start = 1) ]
         message = '\n'.join(song_titles)
         await utils.embeded_message(ctx, message=message if message else "Queue is empty")
 
@@ -77,15 +77,15 @@ class MusicService:
 
         
     def empty_queue(self):
-        return not self.queue
+        return not self._queue
 
 
-    async def play_next(self, ctx):
+    async def play_loop(self, ctx):
         if self.empty_queue():
             await self.leave(ctx)
             return
 
-        song = self.queue.pop(0)
+        song = self._queue.pop(0)
         await utils.embeded_message(ctx, action="Playing", message=self.song_description(song), blame=ctx.author)
         self.voice_client.play(FFmpegPCMAudio(song.audio_url, **FFMPEG_OPTIONS))
 
@@ -93,7 +93,7 @@ class MusicService:
         while self.is_playing():
             await asyncio.sleep(1)
 
-        await self.play_next(ctx)
+        await self.play_loop(ctx)
 
 
     async def leave(self, ctx):
@@ -114,6 +114,6 @@ class MusicService:
 
     async def add_song(self, ctx, song_name):
         song = self.search_yt(song_name=song_name)
-        self.queue.append(song)
+        self._queue.append(song)
         await utils.embeded_message(ctx, action="Queued", message=self.song_description(song), color=discord.Colour.green())
 
