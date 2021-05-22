@@ -1,8 +1,8 @@
 import re
 import config
 
-OPENER = '\"'
-CLOSER = '\"'
+OPENER = config.PARAM_WRAPPERS[0]
+CLOSER = config.PARAM_WRAPPERS[1]
 
 def params(message):
     open_i = message.find(OPENER)

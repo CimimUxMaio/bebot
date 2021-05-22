@@ -23,6 +23,8 @@ def category_description(category):
 def command_info(command_name):
     return COMMAND_CONFIG["commands"][command_name]
 
+PARAM_WRAPPERS = COMMAND_CONFIG["paramWrappers"]
+
 
 with open("../brain_config.json", "r") as brain_config_file:
     BRAIN_CONFIG = json.load(brain_config_file)
