@@ -1,4 +1,3 @@
-from datetime import datetime
 from exceptions import MissingParameter
 import guildmanager
 
