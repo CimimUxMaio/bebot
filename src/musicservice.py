@@ -11,7 +11,7 @@ import asyncio
 YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
-Song = namedtuple("Song", "title audio_url yt_url duration")
+Song = namedtuple("Song", "title audio_url yt_url duration blame")
 
 class MusicService:
     def __init__(self):
@@ -45,7 +45,7 @@ class MusicService:
     async def show_queue(self, ctx):
         song_titles = [ f"{i}. {self.song_description(song)}" for i, song in enumerate(self._queue, start = 1) ]
         message = '\n'.join(song_titles)
-        await utils.embeded_message(ctx, message=message if message else "Queue is empty")
+        await utils.send_embeded_message(ctx, message=message if message else "Queue is empty")
 
 
     # PRIVATE #
@@ -54,11 +54,15 @@ class MusicService:
         return self.voice_client is not None and self.voice_client.is_playing()
 
 
+    def is_connected(self):
+        return self.voice_client is not None and self.voice_client.is_connected()
+
+
     def is_connected_to(self, channel):
-        return self.voice_client is not None and self.voice_client.channel == channel and self.voice_client.is_connected()
+        return self.is_connected() and self.voice_client.channel == channel
 
 
-    def search_yt(self, *, song_name):
+    def song(self, *, song_name, blame=None):
         with YoutubeDL(YDL_OPTIONS) as ydl:
             try:
                 song = ydl.extract_info("ytsearch:%s" % song_name, download=False)['entries'][0]
@@ -66,14 +70,14 @@ class MusicService:
                 raise exceptions.InvalidSongName(song_name)
 
         yt_url = f"https://www.youtube.com/watch?v={song['id']}"
-        return Song(song["title"], song["url"], yt_url, song["duration"])
+        return Song(song["title"], song["url"], yt_url, song["duration"], blame)
 
 
     async def connect_or_move_to(self, *, channel):
         if self.voice_client is None or not self.voice_client.is_connected():
             self.voice_client = await channel.connect()
         else:
-            self.voice_client.move_to(channel)
+            await self.voice_client.move_to(channel)
 
         
     def empty_queue(self):
@@ -86,7 +90,7 @@ class MusicService:
             return
 
         song = self._queue.pop(0)
-        await utils.embeded_message(ctx, action="Playing", message=self.song_description(song), blame=ctx.author)
+        await self.send_embeded_song_message(ctx, action="Playing", song=song, show_blame=True)
         self.voice_client.play(FFmpegPCMAudio(song.audio_url, **FFMPEG_OPTIONS))
 
         # Wait till finished
@@ -113,7 +117,10 @@ class MusicService:
 
 
     async def add_song(self, ctx, song_name):
-        song = self.search_yt(song_name=song_name)
+        song = self.song(song_name=song_name, blame=ctx.message.author)
         self._queue.append(song)
-        await utils.embeded_message(ctx, action="Queued", message=self.song_description(song), color=discord.Colour.green())
+        await self.send_embeded_song_message(ctx, action="Queued", song=song, color=discord.Colour.green())
 
+
+    async def send_embeded_song_message(self, ctx, *, action, song, color=discord.Colour.blue(), show_blame=False):
+        await utils.send_embeded_message(ctx, action=action, message=self.song_description(song), color=color, blame=song.blame if show_blame else None)

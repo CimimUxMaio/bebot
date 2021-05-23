@@ -8,7 +8,7 @@
 
     "commands": {
       "play": {
-        "parameters": ["song_name"],
+        "parameters": ["*song_name"],
         "description": "Plays the given music / video"
       },
 
