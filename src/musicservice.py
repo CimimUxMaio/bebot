@@ -25,8 +25,8 @@ class MusicService:
         if not voice:
             raise exceptions.UserNotConnectedToVoiceChannel()
 
-        if not self.is_connected_to(voice.channel):
-            await self.connect_or_move_to(channel=voice.channel)
+        if not self.is_connected():
+            self.voice_client = await voice.channel.connect()
         
         for song_name in song_names:
             await self.add_song(ctx, song_name)
@@ -102,6 +102,7 @@ class MusicService:
 
     async def leave(self, ctx):
         await ctx.send("Bye bye")
+        self._queue = []
         await self.voice_client.disconnect()
 
 
