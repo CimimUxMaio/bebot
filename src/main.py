@@ -84,7 +84,7 @@ def is_manual_command(command_name):
 
 
 async def handle_error(ctx, error):
-    await utils.embeded_message(ctx, action="Error", message=str(error), color=discord.Colour.red())
+    await utils.send_embeded_message(ctx, action="Error", message=str(error), color=discord.Colour.red())
 
 
 @bot.event
