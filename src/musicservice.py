@@ -1,5 +1,4 @@
 from collections import namedtuple
-import threading
 from discord import VoiceClient, FFmpegPCMAudio
 import discord
 from youtube_dl import YoutubeDL

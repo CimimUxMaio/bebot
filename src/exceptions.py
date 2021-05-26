@@ -3,9 +3,9 @@ class ModelException(Exception):
         super().__init__(message)
 
 
-class MissingParameter(ModelException):
-    def __init__(self, param_name):
-        super().__init__(f"{param_name} is a required argument that is missing")
+class MissingParameters(ModelException):
+    def __init__(self, *param_names):
+        super().__init__(f"Missing required argument{'s' if len(param_names) > 1 else ''}: {', '.join(param_names)}")
         
 
 class LastUninterpretedCommandMessageMissing(ModelException):

@@ -1,3 +1,4 @@
+import exceptions
 
 
 class ICommand():
@@ -21,7 +22,14 @@ class ICommand():
         return self.__parameters
 
     async def __call__(self, ctx, *args):
+        self.check_parameters(args)
         await self.__func(ctx, *args)
+        
+    def check_parameters(self, args):
+        if len(args) < len(self.parameters):
+            missing = self.parameters[len(args):]
+            raise exceptions.MissingParameters(*missing)
+            
 
 
 class ICommandManager:

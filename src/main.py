@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord.ext.commands.errors import CommandError
 from brain import BRAIN
 import config
-from exceptions import ModelException, MissingParameter
+from exceptions import ModelException
 import parsing
 import datacollector
 import itertools
@@ -69,9 +69,6 @@ async def queue(ctx):
 
 @icmd_manager.icommand(**config.command_info("play"))
 async def play(ctx, *args):
-    if len(args) == 0:
-        raise MissingParameter("song_name")
-
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
     await musicservice.play(ctx, song_names=args)
 
