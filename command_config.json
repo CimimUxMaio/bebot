@@ -9,26 +9,31 @@
     "commands": {
       "play": {
         "parameters": ["*song_name"],
+        "optionals": [],
         "description": "Plays the given music / video"
       },
 
       "skip": {
         "parameters": [],
+        "optionals": [["song_index", 1]],
         "description": "Skips current song"
       },
 
       "queue": {
         "parameters": [],
+        "optionals": [],
         "description": "Displays the current music queue"
       },
 
       "teach_last": {
         "parameters": ["classification"],
+        "optionals": [],
         "description": "Classifies the last uninterpreted command"
       },
 
       "help": {
         "parameters": [],
+        "optionals": [],
         "description": "Shows this message"
       }
     }

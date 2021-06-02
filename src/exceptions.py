@@ -26,3 +26,7 @@ class UserNotConnectedToVoiceChannel(ModelException):
 class CommandIterpretationException(ModelException):
     def __init__(self, command_message):
         super().__init__(f"Couldn't resolve \"{command_message}\" to a valid command")
+
+
+def IndexOutOfBoundaries(index):
+    return ModelException(f"here is no song at index {index}")

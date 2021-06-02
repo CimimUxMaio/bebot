@@ -7,6 +7,7 @@ class ICommand():
         self.__name = func.__name__
         self.__description = cmd_info.get("description", "")
         self.__parameters = cmd_info.get("parameters", [])
+        self.__optionals = cmd_info.get("optionals", [])
         self.__func = func
     
     @property
@@ -16,6 +17,13 @@ class ICommand():
     @property
     def description(self):
         return self.__description
+
+    @property
+    def shape_description_formated(self):
+        name_str = f"**{self.__name}**"
+        parameters_str = ' '.join([f"<{param_name}>" for param_name in self.__parameters])
+        optionals_str = ' '.join([f"<{optional_name}, default={default}>" for optional_name, default in self.__optionals])
+        return f"{name_str} {parameters_str} {optionals_str}"
 
     @property
     def parameters(self):

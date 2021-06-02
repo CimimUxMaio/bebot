@@ -38,11 +38,7 @@ async def help(ctx):
     embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
     embed.add_field(name="__Interpreted__", value=f"_{config.category_description('interpreted')}_", inline=False)
     for command in icmd_manager.commands.values():
-        command_namings = f"**{command.name}**"
-        command_parameters = ' '.join([f"<{param_name}>" for param_name in command.parameters])
-        command_description = command.description
-        field_title = '  '.join([command_namings, command_parameters])
-        embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
+        embed.add_field(name=command.shape_description_formated, value=command.description, inline=False)  # Will fail if description is BLANK
 
     await ctx.send(embed=embed)
 
@@ -56,9 +52,10 @@ async def teach_last(ctx, classification):
 # INTERPRETED COMMANDS #
 
 @icmd_manager.icommand(**config.command_info("skip"))
-async def skip(ctx):
+async def skip(ctx, song_index=1):
+    print(song_index)
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.skip(ctx)
+    await musicservice.skip(ctx, int(song_index)-1)
 
 
 @icmd_manager.icommand(**config.command_info("queue"))
