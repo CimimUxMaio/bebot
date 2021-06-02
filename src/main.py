@@ -1,4 +1,5 @@
 import discord
+from discord import embeds
 from discord.ext import commands
 from discord.ext.commands.errors import CommandError
 from brain import BRAIN
@@ -19,29 +20,31 @@ bot.remove_command("help")
 
 # MANUAL COMMANDS #
 
+def command_formated_description(command_name):
+    cmd_info = config.command_info(command_name)
+    cmd_name = f"**{command_name}**"
+    cmd_parameters = ' '.join([f"<{param_name}>" for param_name in cmd_info["parameters"]])
+    cmd_optionals = ' '.join([f"<{optional_name}, default={default}>" for optional_name, default in cmd_info["optionals"]])
+
+    description = cmd_info["description"]
+    title = '  '.join([cmd_name, cmd_parameters, cmd_optionals])
+    return title, description
+
 @bot.command(aliases=["h"])
 async def help(ctx):
-    embed = discord.Embed(title="Help", color = discord.Colour.blue())
-
-    SEPARATOR = "\u200b"
-
-    embed.add_field(name="__Manual__", value=f"_{config.category_description('manual')}_", inline=False)
+    embed1 = discord.Embed(title="Manual", description=f"_{config.category_description('manual')}_", color = discord.Colour.blue())
     for manual_cmd in bot.commands:
-        aliases = manual_cmd.aliases
-        info = config.command_info(manual_cmd.name)
-        command_namings = f"**{manual_cmd.name} { '|' if aliases else ''} {' | '.join(aliases)}**"
-        command_parameters = ' '.join([f"<{param_name}>" for param_name in info["parameters"]])
-        command_description = info["description"]
-        field_title = '  '.join([command_namings, command_parameters])
-        embed.add_field(name=field_title, value=command_description, inline=False)  # Will fail if description is BLANK
+        title, description = command_formated_description(manual_cmd.name)
+        embed1.add_field(name=title, value=description, inline=False)  # Will fail if description is BLANK
+    
+    embed2 = discord.Embed(title="Interpreted", description=f"_{config.category_description('interpreted')}_", color = discord.Colour.blue())
+    for command in icmd_manager.commands:
+        title, description = command_formated_description(command)
+        embed2.add_field(name=title, value=description, inline=False)
 
-    embed.add_field(name=SEPARATOR, value=SEPARATOR, inline=False)
-    embed.add_field(name="__Interpreted__", value=f"_{config.category_description('interpreted')}_", inline=False)
-    for command in icmd_manager.commands.values():
-        embed.add_field(name=command.shape_description_formated, value=command.description, inline=False)  # Will fail if description is BLANK
-
-    await ctx.send(embed=embed)
-
+    await ctx.send(embed=embed1)
+    await ctx.send(embed=embed2)
+    
 
 @bot.command(aliases=["tl"])
 async def teach_last(ctx, classification):
