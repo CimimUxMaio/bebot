@@ -53,7 +53,6 @@ async def teach_last(ctx, classification):
 
 @icmd_manager.icommand(**config.command_info("skip"))
 async def skip(ctx, song_index=1):
-    print(song_index)
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
     await musicservice.skip(ctx, int(song_index)-1)
 

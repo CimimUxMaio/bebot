@@ -2,31 +2,26 @@ class ModelException(Exception):
     def __init__(self, message):
         super().__init__(message)
 
-
-class MissingParameters(ModelException):
-    def __init__(self, *param_names):
-        super().__init__(f"Missing required argument{'s' if len(param_names) > 1 else ''}: {', '.join(param_names)}")
-        
-
-class LastUninterpretedCommandMessageMissing(ModelException):
-    def __init__(self):
-        super().__init__("Last uninterpreted command message is missing or has already been classified")
+       
+def MissingParameters(self, *param_names):
+    return ModelException(f"Missing required argument{'s' if len(param_names) > 1 else ''}: {', '.join(param_names)}")
 
 
-class InvalidSongName(ModelException):
-    def __init__(self, song_name):
-        super().__init__(f"Could not download the song: {song_name}. Incorrect format try another. This could be due to it being in playlist or livestream format")
+def LastUninterpretedCommandMessageMissing():
+    return ModelException("Last uninterpreted command message is missing or has already been classified")
 
 
-class UserNotConnectedToVoiceChannel(ModelException):
-    def __init__(self):
-        super().__init__(f"You must be connected to a voice channel")
+def InvalidSongName(song_name):
+    return ModelException(f"Could not download the song: {song_name}. Incorrect format try another. This could be due to it being in playlist or livestream format")
 
 
-class CommandIterpretationException(ModelException):
-    def __init__(self, command_message):
-        super().__init__(f"Couldn't resolve \"{command_message}\" to a valid command")
+def UserNotConnectedToVoiceChannel():
+    return ModelException(f"You must be connected to a voice channel")
+
+
+def CommandInterpretationException(command_message):
+    return ModelException(f"Couldn't resolve \"{command_message}\" to a valid command")
 
 
 def IndexOutOfBoundaries(index):
-    return ModelException(f"here is no song at index {index}")
+    return ModelException(f"There is no song at index {index}")
