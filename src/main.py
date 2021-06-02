@@ -1,6 +1,7 @@
 import discord
 from discord import embeds
 from discord.ext import commands
+from discord.ext.commands.core import command
 from discord.ext.commands.errors import CommandError
 from brain import BRAIN
 import config
@@ -30,20 +31,25 @@ def command_formated_description(command_name):
     title = '  '.join([cmd_name, cmd_parameters, cmd_optionals])
     return title, description
 
+
+def command_category_embed(*, category_name, command_names):
+    embed = discord.Embed(title=category_name, description=f"_{config.category_description(category_name.lower())}_", color = discord.Colour.blue())
+    for cmd in command_names:
+        title, description = command_formated_description(cmd)
+        embed.add_field(name=title, value=description, inline=False)
+
+    return embed
+
 @bot.command(aliases=["h"])
 async def help(ctx):
-    embed1 = discord.Embed(title="Manual", description=f"_{config.category_description('manual')}_", color = discord.Colour.blue())
-    for manual_cmd in bot.commands:
-        title, description = command_formated_description(manual_cmd.name)
-        embed1.add_field(name=title, value=description, inline=False)  # Will fail if description is BLANK
-    
-    embed2 = discord.Embed(title="Interpreted", description=f"_{config.category_description('interpreted')}_", color = discord.Colour.blue())
-    for command in icmd_manager.commands:
-        title, description = command_formated_description(command)
-        embed2.add_field(name=title, value=description, inline=False)
-
-    await ctx.send(embed=embed1)
-    await ctx.send(embed=embed2)
+    await ctx.send(embed=command_category_embed(
+        category_name="Manual",
+        command_names=[cmd.name for cmd in bot.commands]
+    ))
+    await ctx.send(embed=command_category_embed(
+        category_name="Interpreted",
+        command_names=icmd_manager.commands.keys()
+    ))
     
 
 @bot.command(aliases=["tl"])
