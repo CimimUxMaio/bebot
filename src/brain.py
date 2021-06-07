@@ -22,7 +22,7 @@ class __Brain:
         best_index = np.argmax(prediction)
         
         if prediction[best_index] < config.MIN_CONFIDENCE:
-            raise exceptions.CommandIterpretationException(message)
+            raise exceptions.CommandInterpretationException(message)
         return config.COMMAND_MAPPINGS[best_index]
 
 

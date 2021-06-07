@@ -3,7 +3,7 @@ class ModelException(Exception):
         super().__init__(message)
 
        
-def MissingParameters(self, *param_names):
+def MissingParameters(*param_names):
     return ModelException(f"Missing required argument{'s' if len(param_names) > 1 else ''}: {', '.join(param_names)}")
 
 
