@@ -1,17 +1,10 @@
 import discord
-from discord import embeds
 from discord.ext import commands
-from discord.ext.commands.core import command
 from discord.ext.commands.errors import CommandError
-from brain import BRAIN
 import config
 from exceptions import ModelException
-import parsing
-import datacollector
-import itertools
 import utils
 import guildmanager
-from commandmanager import INSTANCE as icmd_manager
 
 
 PREFIX = config.BOT_PREFIX
@@ -46,44 +39,29 @@ async def help(ctx):
         category_name="Manual",
         command_names=[cmd.name for cmd in bot.commands]
     ))
-    await ctx.send(embed=command_category_embed(
-        category_name="Interpreted",
-        command_names=icmd_manager.commands.keys()
-    ))
     
-
-@bot.command(aliases=["tl"])
-async def teach_last(ctx, classification):
-    classified_message = datacollector.classify_last_message(classification)
-    await ctx.send(f"\"{classified_message}\" classified as \"{classification}\"")
-
 
 # INTERPRETED COMMANDS #
 
-@icmd_manager.icommand(**config.command_info("skip"))
+@bot.command(aliases=["s"])
 async def skip(ctx, song_index=1):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
     await musicservice.skip(ctx, int(song_index)-1)
 
 
-@icmd_manager.icommand(**config.command_info("queue"))
+@bot.command(aliases=["q"])
 async def queue(ctx):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
     await musicservice.show_queue(ctx)
 
 
-@icmd_manager.icommand(**config.command_info("play"))
+@bot.command(aliases=["p"])
 async def play(ctx, *args):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.play(ctx, song_names=args)
+    await musicservice.play(ctx, song_name="".join(args))
 
 
 # EVENTS #
-
-def is_manual_command(command_name):
-    manual_commands = itertools.chain(*[[command.name] + command.aliases for command in bot.commands])
-    return command_name in manual_commands
-
 
 async def handle_error(ctx, error):
     await utils.send_embeded_message(ctx, action="Error", message=str(error), color=discord.Colour.red())
@@ -97,7 +75,7 @@ async def on_command_error(ctx, error):
         original_error = error.original
         
     if isinstance(original_error, ModelException) or isinstance(original_error, CommandError):
-        handle_error(ctx, original_error)
+        await handle_error(ctx, original_error)
         return
 
     raise error
@@ -118,26 +96,7 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_message(message):
-    if not message.content.startswith(PREFIX):
-        return
-
-    without_prefix = message.content.lstrip(PREFIX)
-    if len(without_prefix) == 0:
-        return
-
-    first_word = without_prefix.split()[0]
-    if is_manual_command(first_word):
-        await bot.process_commands(message)
-        return
-
-    command_message, parameters = parsing.parse_message(without_prefix)
-    datacollector.set_last_message(command_message)
-    ctx = await bot.get_context(message)
-    try:
-        cmd_name = BRAIN.identify_command(command_message)
-        await icmd_manager[cmd_name](ctx, *parameters)
-    except ModelException as error:
-        await handle_error(ctx, error)
+    await bot.process_commands(message)
 
 
 if __name__ == "__main__":

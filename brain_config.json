@@ -1,8 +1,0 @@
-{
-    "minConfidence": 0.7,
-    "commandMappings": {
-        "0": "play",
-        "1": "queue",
-        "2": "skip" 
-    }
-}

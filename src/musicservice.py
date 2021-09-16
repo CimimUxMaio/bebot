@@ -20,7 +20,7 @@ class MusicService:
 
     # INTERFACE #
 
-    async def play(self, ctx, *, song_names: list):
+    async def play(self, ctx, *, song_name):
         voice = ctx.author.voice
         if not voice:
             raise exceptions.UserNotConnectedToVoiceChannel()
@@ -28,8 +28,7 @@ class MusicService:
         if not self.is_connected():
             self.voice_client = await voice.channel.connect()
         
-        for song_name in song_names:
-            await self.add_song(ctx, song_name)
+        await self.add_song(ctx, song_name)
             
         if not self.is_playing():
             await self.play_loop(ctx)
