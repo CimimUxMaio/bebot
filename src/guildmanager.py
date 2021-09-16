@@ -13,7 +13,6 @@ class GuildNotRegistered(Exception):
 
 def register(*, guild_id):
     _guild_states[guild_id] = GuildState(music_service=musicservice.MusicService())
-    print(f"Registered guild: {guild_id}")
 
 
 def get_state(guild_id):
