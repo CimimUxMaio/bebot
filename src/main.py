@@ -1,4 +1,3 @@
-from inspect import signature
 import discord
 from discord.ext import commands
 from discord.ext.commands.errors import CommandError
@@ -6,14 +5,17 @@ import config
 from exceptions import ModelException
 import utils
 import guildmanager
+import music.musiccog as musiccog
 
 
 PREFIX = config.BOT_PREFIX
 bot = commands.Bot(command_prefix=PREFIX)
+
 bot.remove_command("help")
 
+musiccog.setup(bot)
 
-# COMMANDS #
+
 
 @bot.command(aliases=["h"], help=config.command_help("help"))
 async def help(ctx):
@@ -28,24 +30,7 @@ async def help(ctx):
         color=discord.Colour.blue()
     )
     await ctx.send(embed=embed)
-    
 
-@bot.command(aliases=["s"], help=config.command_help("skip"))
-async def skip(ctx, position: int = 1):
-    musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.skip(ctx, position-1)
-
-
-@bot.command(aliases=["q"], help=config.command_help("queue"))
-async def queue(ctx):
-    musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.show_queue(ctx)
-
-
-@bot.command(aliases=["p"], help=config.command_help("play"))
-async def play(ctx, *, search_string):
-    musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.play(ctx, search_string=search_string)
 
 
 # EVENTS #
@@ -80,11 +65,6 @@ async def on_ready():
 async def on_guild_join(guild):
     guildmanager.register(guild_id=guild.id)
     
-
-@bot.event
-async def on_message(message):
-    await bot.process_commands(message)
-
 
 if __name__ == "__main__":
     bot.run(config.BOT_TOKEN)

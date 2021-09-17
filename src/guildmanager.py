@@ -1,5 +1,5 @@
 from collections import namedtuple
-import musicservice
+from music.musicservice import MusicService
 
 GuildState = namedtuple("GuildState", "music_service")
 
@@ -11,7 +11,7 @@ class GuildNotRegistered(Exception):
 _guild_states = {} 
 
 def register(*, guild_id):
-    _guild_states[guild_id] = GuildState(music_service=musicservice.MusicService())
+    _guild_states[guild_id] = GuildState(music_service=MusicService())
 
 
 def get_state(guild_id):
