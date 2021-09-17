@@ -43,9 +43,9 @@ async def queue(ctx):
 
 
 @bot.command(aliases=["p"], help=config.command_help("play"))
-async def play(ctx, *, song_name):
+async def play(ctx, *, search_string):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.play(ctx, song_name=song_name)
+    await musicservice.play(ctx, search_string=search_string)
 
 
 # EVENTS #

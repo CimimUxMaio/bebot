@@ -1,16 +1,13 @@
 from collections import namedtuple
-from discord import VoiceClient, FFmpegPCMAudio
+from discord import VoiceClient
 import discord
-from youtube_dl import YoutubeDL
+from song import Song
 import utils
 import exceptions
 import asyncio
 
 
-YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
-FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-
-Song = namedtuple("Song", "title audio_url yt_url duration blame")
+QueuedSong = namedtuple("QueuedSong", "song blame")
 
 class MusicService:
     def __init__(self):
@@ -19,7 +16,7 @@ class MusicService:
 
     # INTERFACE #
 
-    async def play(self, ctx, *, song_name):
+    async def play(self, ctx, *, search_string):
         voice = ctx.author.voice
         if not voice:
             raise exceptions.UserNotConnectedToVoiceChannel()
@@ -27,7 +24,7 @@ class MusicService:
         if not self.is_connected():
             self.voice_client = await voice.channel.connect()
         
-        await self.add_song(ctx, song_name)
+        await self.add_song(ctx, search_string)
             
         if not self.is_playing():
             await self.play_loop(ctx)
@@ -38,19 +35,19 @@ class MusicService:
             raise exceptions.IndexOutOfBoundaries(song_index)
         
         if song_index > 0:
-            song = self._queue.pop(song_index)
-            await self.send_embeded_song_message(ctx, action="Removed", song=song, show_blame=True)
+            queued_song = self._queue.pop(song_index)
+            await self.send_embeded_song_message(ctx, action="Removed", queued_song=queued_song, show_blame=True)
         elif self.is_playing() and song_index == 0:
-            await self.send_embeded_song_message(ctx, action="Skipped", song=self._queue[0], show_blame=True)
+            await self.send_embeded_song_message(ctx, action="Skipped", queued_song=self._queue[0], show_blame=True)
             await ctx.message.add_reaction(u"\U0001F44C")
             self.voice_client.stop()
     
 
     async def show_queue(self, ctx):
-        song_titles = [ f"{i}. {self.song_description(song)}" for i, song in enumerate(self._queue, start = 1) ]
+        song_titles = [ f"{i}. {queued_song.song.description}" for i, queued_song in enumerate(self._queue, start = 1) ]
         message = '\n'.join(song_titles)
         embed = utils.embeded_message(message=message if message else "Queue is empty")
-        ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     # PRIVATE #
 
@@ -64,17 +61,6 @@ class MusicService:
 
     def is_connected_to(self, channel):
         return self.is_connected() and self.voice_client.channel == channel
-
-
-    def song(self, *, song_name, blame=None):
-        with YoutubeDL(YDL_OPTIONS) as ydl:
-            try:
-                song = ydl.extract_info("ytsearch:%s" % song_name, download=False)['entries'][0]
-            except:
-                raise exceptions.InvalidSongName(song_name)
-
-        yt_url = f"https://www.youtube.com/watch?v={song['id']}"
-        return Song(song["title"], song["url"], yt_url, song["duration"], blame)
 
 
     async def connect_or_move_to(self, *, channel):
@@ -93,9 +79,9 @@ class MusicService:
             await self.leave(ctx)
             return
 
-        song = self._queue[0]
-        await self.send_embeded_song_message(ctx, action="Playing", song=song, show_blame=True)
-        self.voice_client.play(FFmpegPCMAudio(song.audio_url, **FFMPEG_OPTIONS))
+        queued_song = self._queue[0]
+        await self.send_embeded_song_message(ctx, action="Playing", queued_song=queued_song, show_blame=True)
+        self.voice_client.play(queued_song.song.audio())
 
         # Wait till finished
         while self.is_playing():
@@ -123,17 +109,17 @@ class MusicService:
 
 
     async def add_song(self, ctx, song_name):
-        song = self.song(song_name=song_name, blame=ctx.message.author)
-        self._queue.append(song)
-        await self.send_embeded_song_message(ctx, action="Queued", song=song, color=discord.Colour.green())
+        queued_song = QueuedSong(Song(song_name), utils.Blamed(ctx.author))
+        self._queue.append(queued_song)
+        await self.send_embeded_song_message(ctx, action="Queued", queued_song=queued_song, color=discord.Colour.green())
 
 
-    async def send_embeded_song_message(self, ctx, *, action, song, color=discord.Colour.blue(), show_blame=False):
+    async def send_embeded_song_message(self, ctx, *, action, queued_song, color=discord.Colour.blue(), show_blame=False):
         embed = utils.embeded_message(
             action=action, 
-            message=self.song_description(song), 
+            message=queued_song.song.description, 
             color=color, 
-            blame=song.blame if show_blame else None
+            blame=queued_song.blame if show_blame else None
         )
 
         await ctx.send(embed=embed)
