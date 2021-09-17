@@ -1,3 +1,4 @@
+from inspect import signature
 import discord
 from discord.ext import commands
 from discord.ext.commands.errors import CommandError
@@ -12,50 +13,36 @@ bot = commands.Bot(command_prefix=PREFIX)
 bot.remove_command("help")
 
 
-# MANUAL COMMANDS #
+# COMMANDS #
 
-def command_formated_description(command_name):
-    cmd_info = config.command_info(command_name)
-    cmd_name = f"**{command_name}**"
-    cmd_parameters = ' '.join([f"<{param_name}>" for param_name in cmd_info["parameters"]])
-    cmd_optionals = ' '.join([f"<{optional_name}, default={default}>" for optional_name, default in cmd_info["optionals"]])
-
-    description = cmd_info["description"]
-    title = '  '.join([cmd_name, cmd_parameters, cmd_optionals])
-    return title, description
-
-
-def command_category_embed(*, category_name, command_names):
-    embed = discord.Embed(title=category_name, description=f"_{config.category_description(category_name.lower())}_", color = discord.Colour.blue())
-    for cmd in command_names:
-        title, description = command_formated_description(cmd)
-        embed.add_field(name=title, value=description, inline=False)
-
-    return embed
-
-@bot.command(aliases=["h"])
+@bot.command(aliases=["h"], help=config.command_help("help"))
 async def help(ctx):
-    await ctx.send(embed=command_category_embed(
-        category_name="Manual",
-        command_names=[cmd.name for cmd in bot.commands]
-    ))
+    def command_description(cmd):
+        params = cmd.signature
+        return utils.bold(f"{PREFIX} {cmd.name}") + f" {utils.italics(params)}\n{cmd.help}"
+
+    description="\n\n".join([ command_description(cmd) for cmd in bot.commands ])
+    embed = discord.Embed(
+        title="Help",
+        description=description,
+        color=discord.Colour.blue()
+    )
+    await ctx.send(embed=embed)
     
 
-# INTERPRETED COMMANDS #
-
-@bot.command(aliases=["s"])
+@bot.command(aliases=["s"], help=config.command_help("skip"))
 async def skip(ctx, song_index=1):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
     await musicservice.skip(ctx, int(song_index)-1)
 
 
-@bot.command(aliases=["q"])
+@bot.command(aliases=["q"], help=config.command_help("queue"))
 async def queue(ctx):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
     await musicservice.show_queue(ctx)
 
 
-@bot.command(aliases=["p"])
+@bot.command(aliases=["p"], help=config.command_help("play"))
 async def play(ctx, *, song_name):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
     await musicservice.play(ctx, song_name=song_name)
@@ -64,8 +51,8 @@ async def play(ctx, *, song_name):
 # EVENTS #
 
 async def handle_error(ctx, error):
-    await utils.send_embeded_message(ctx, action="Error", message=str(error), color=discord.Colour.red())
-
+    embed = utils.embeded_message(action="Error", message=str(error), color=discord.Colour.red())
+    await ctx.send(embed=embed)
 
 @bot.event
 async def on_command_error(ctx, error):

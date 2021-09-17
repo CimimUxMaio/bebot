@@ -49,8 +49,8 @@ class MusicService:
     async def show_queue(self, ctx):
         song_titles = [ f"{i}. {self.song_description(song)}" for i, song in enumerate(self._queue, start = 1) ]
         message = '\n'.join(song_titles)
-        await utils.send_embeded_message(ctx, message=message if message else "Queue is empty")
-
+        embed = utils.embeded_message(message=message if message else "Queue is empty")
+        ctx.send(embed=embed)
 
     # PRIVATE #
 
@@ -129,4 +129,12 @@ class MusicService:
 
 
     async def send_embeded_song_message(self, ctx, *, action, song, color=discord.Colour.blue(), show_blame=False):
-        await utils.send_embeded_message(ctx, action=action, message=self.song_description(song), color=color, blame=song.blame if show_blame else None)
+        embed = utils.embeded_message(
+            action=action, 
+            message=self.song_description(song), 
+            color=color, 
+            blame=song.blame if show_blame else None
+        )
+
+        await ctx.send(embed=embed)
+        

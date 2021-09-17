@@ -1,0 +1,17 @@
+{
+    "play": {
+      "help": "Plays the given song / video"
+    },
+
+    "skip": {
+      "help": "Skips current song"
+    },
+
+    "queue": {
+      "help": "Displays the current song queue"
+    },
+
+    "help": {
+      "help": "Shows this message"
+    }
+}
