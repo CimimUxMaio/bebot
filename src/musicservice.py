@@ -53,10 +53,15 @@ class MusicService:
     
 
     async def show_queue(self, ctx):
-        song_titles = [ f"{i}. {queued_song.song.description}" for i, queued_song in enumerate(self._queue, start = 1) ]
+        def format_title(pos, title):
+            default = f"{pos}. {title}"
+            return utils.bold(default) if pos == 1 else default
+
+        song_titles = [ format_title(pos, queued_song.song.description) for pos, queued_song in enumerate(self._queue, start = 1) ]
         message = '\n'.join(song_titles)
         embed = utils.embeded_message(message=message if message else "Queue is empty")
         await ctx.send(embed=embed)
+
 
     # PRIVATE #
 

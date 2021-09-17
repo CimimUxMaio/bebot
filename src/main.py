@@ -31,9 +31,9 @@ async def help(ctx):
     
 
 @bot.command(aliases=["s"], help=config.command_help("skip"))
-async def skip(ctx, song_index: int = 1):
+async def skip(ctx, position: int = 1):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.skip(ctx, song_index-1)
+    await musicservice.skip(ctx, position-1)
 
 
 @bot.command(aliases=["q"], help=config.command_help("queue"))
