@@ -33,15 +33,23 @@ class MusicService:
 
     async def skip(self, ctx, song_index):
         if len(self._queue)-1 < song_index or song_index < 0:
-            raise exceptions.IndexOutOfBoundaries(song_index)
-        
-        if song_index > 0:
-            queued_song = self._queue.pop(song_index)
-            await self.send_embeded_song_message(ctx, action="Removed", queued_song=queued_song, show_blame=True)
-        elif self.is_playing() and song_index == 0:
-            await self.send_embeded_song_message(ctx, action="Skipped", queued_song=self._queue[0], show_blame=True)
-            await ctx.message.add_reaction(u"\U0001F44C")
+            raise exceptions.IndexOutOfBoundaries(song_index + 1)
+
+        if song_index == 0:
             self.voice_client.stop()
+
+        event = "Removed" if song_index > 0 else "Skipped"
+        queued_song = self._queue.pop(song_index)
+
+        await ctx.message.add_reaction(u"\U0001F44C")
+        await self.notify_song_event(ctx, event, queued_song, show_blame=True)
+        
+#        if song_index > 0:
+#            queued_song = self._queue.pop(song_index)
+#            await self.notify_song_event(ctx, "Removed", queued_song, show_blame=True)
+#        elif self.is_playing() and song_index == 0:
+#            await self.notify_song_event(ctx, "Skipped", queued_song=self._queue[0], show_blame=True)
+#            self.voice_client.stop()
     
 
     async def show_queue(self, ctx):
@@ -74,7 +82,7 @@ class MusicService:
             return
 
         queued_song = self._queue[0]
-        await self.send_embeded_song_message(ctx, action="Playing", queued_song=queued_song, show_blame=True)
+        await self.notify_song_event(ctx, "Playing", queued_song, show_blame=True)
         self.voice_client.play(queued_song.song.audio())
 
         await self.wait_finish_playing()
@@ -97,12 +105,12 @@ class MusicService:
     async def add_song(self, ctx, song_name):
         queued_song = QueuedSong(Song(song_name), utils.Blamed(ctx.author))
         self._queue.append(queued_song)
-        await self.send_embeded_song_message(ctx, action="Queued", queued_song=queued_song, color=discord.Colour.green())
+        await self.notify_song_event(ctx, "Queued", queued_song, color=discord.Colour.green())
 
 
-    async def send_embeded_song_message(self, ctx, *, action, queued_song, color=discord.Colour.blue(), show_blame=False):
+    async def notify_song_event(self, ctx, event, queued_song, color=discord.Colour.blue(), show_blame=False):
         embed = utils.embeded_message(
-            action=action, 
+            event=event, 
             message=queued_song.song.description, 
             color=color, 
             blame=queued_song.blame if show_blame else None

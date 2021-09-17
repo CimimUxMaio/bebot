@@ -31,9 +31,9 @@ async def help(ctx):
     
 
 @bot.command(aliases=["s"], help=config.command_help("skip"))
-async def skip(ctx, song_index=1):
+async def skip(ctx, song_index: int = 1):
     musicservice = guildmanager.get_state(ctx.guild.id).music_service
-    await musicservice.skip(ctx, int(song_index)-1)
+    await musicservice.skip(ctx, song_index-1)
 
 
 @bot.command(aliases=["q"], help=config.command_help("queue"))
@@ -51,7 +51,7 @@ async def play(ctx, *, search_string):
 # EVENTS #
 
 async def handle_error(ctx, error):
-    embed = utils.embeded_message(action="Error", message=str(error), color=discord.Colour.red())
+    embed = utils.embeded_message(event="Error", message=str(error), color=discord.Colour.red())
     await ctx.send(embed=embed)
 
 @bot.event
