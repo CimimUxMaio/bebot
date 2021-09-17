@@ -14,6 +14,7 @@ class MusicService:
         self.voice_client: VoiceClient = None
         self._queue = []
 
+
     # INTERFACE #
 
     async def play(self, ctx, *, search_string):
@@ -22,7 +23,7 @@ class MusicService:
             raise exceptions.UserNotConnectedToVoiceChannel()
 
         if not self.is_connected():
-            self.voice_client = await voice.channel.connect()
+            await self.connect(voice.channel)
         
         await self.add_song(ctx, search_string)
             
@@ -59,17 +60,10 @@ class MusicService:
         return self.voice_client is not None and self.voice_client.is_connected()
 
 
-    def is_connected_to(self, channel):
-        return self.is_connected() and self.voice_client.channel == channel
+    async def connect(self, voice_channel):
+        self.voice_client = await voice_channel.connect()
 
 
-    async def connect_or_move_to(self, *, channel):
-        if self.voice_client is None or not self.voice_client.is_connected():
-            self.voice_client = await channel.connect()
-        else:
-            await self.voice_client.move_to(channel)
-
-        
     def empty_queue(self):
         return not self._queue
 
@@ -83,29 +77,21 @@ class MusicService:
         await self.send_embeded_song_message(ctx, action="Playing", queued_song=queued_song, show_blame=True)
         self.voice_client.play(queued_song.song.audio())
 
-        # Wait till finished
-        while self.is_playing():
-            await asyncio.sleep(1)
+        await self.wait_finish_playing()
 
         self._queue.pop(0)
         await self.play_loop(ctx)
+
+    
+    async def wait_finish_playing(self):
+        while self.is_playing():
+            await asyncio.sleep(1)
 
 
     async def leave(self, ctx):
         await ctx.send("Bye bye")
         self._queue = []
         await self.voice_client.disconnect()
-
-
-    def song_description(self, song):
-        hours = int(song.duration / 3600)
-        minutes = int(song.duration / 60)
-        seconds = song.duration % 60
-
-        def padd(n):
-            return f"0{n}" if n < 10 else str(n)
-
-        return f"[{song.title}]({song.yt_url}) ({padd(hours)}:{padd(minutes)}:{padd(seconds)})"
 
 
     async def add_song(self, ctx, song_name):
@@ -123,4 +109,3 @@ class MusicService:
         )
 
         await ctx.send(embed=embed)
-        

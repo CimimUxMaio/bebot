@@ -1,4 +1,4 @@
-from collections import namedtuple
+from typing import Union
 import discord
 
 
@@ -10,7 +10,7 @@ def italics(text):
 
 
 class Blamed:
-    def __init__(self, member: discord.Member):
+    def __init__(self, member: Union[discord.Member, discord.User]):
         self._display_name = member.display_name
         self._avatar_url = member.avatar_url
     
