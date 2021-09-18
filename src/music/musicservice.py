@@ -1,7 +1,7 @@
 from collections import namedtuple
 from discord import VoiceClient
 import discord
-from song import Song
+from music.song import Song
 import utils
 import exceptions
 import asyncio
@@ -35,22 +35,18 @@ class MusicService:
         if len(self._queue)-1 < song_index or song_index < 0:
             raise exceptions.IndexOutOfBoundaries(song_index + 1)
 
-#        if song_index == 0:
-#            self.voice_client.stop()
-#
-#        event = "Removed" if song_index > 0 else "Skipped"
-#        queued_song = self._queue.pop(song_index)
-#
-#        await ctx.message.add_reaction(u"\U0001F44C")
-#        await self.notify_song_event(ctx, event, queued_song, show_blame=True)
-        
+        event = "Skipped"
+        queued_song = self._queue[0]
         if song_index > 0:
+            event = "Removed"
             queued_song = self._queue.pop(song_index)
-            await self.notify_song_event(ctx, "Removed", queued_song, show_blame=True)
-        elif self.is_playing() and song_index == 0:
-            await self.notify_song_event(ctx, "Skipped", queued_song=self._queue[0], show_blame=True)
+
+        if song_index == 0:
             self.voice_client.stop()
-    
+
+        await ctx.message.add_reaction(u"\U0001F44C")
+        await self.notify_song_event(ctx, event, queued_song, show_blame=True)
+        
 
     async def show_queue(self, ctx):
         def format_title(pos, title):
