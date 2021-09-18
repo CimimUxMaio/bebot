@@ -1,5 +1,5 @@
 from discord.colour import Colour
-from BaseCog import BaseCog
+from discord.ext.commands.cog import Cog
 import exceptions
 from discord.ext import commands
 import config
@@ -8,7 +8,7 @@ from music.Song import Song
 import utils
 
 
-class MusicCog(BaseCog):
+class MusicCog(Cog):
     def __init__(self, bot):
         self.bot = bot
         self.services = {}
