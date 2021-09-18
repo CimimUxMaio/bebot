@@ -23,7 +23,7 @@ class Blamed:
         return self._avatar_url
 
 
-def embeded_message(*, event=None, message, color=discord.Colour.blue(), blame: Blamed = None):
+def embedded_message(*, event=None, message, color=discord.Colour.blue(), blame: Blamed = None):
     premessage = bold(event + ': ') if event else ""
     complete_message = premessage + message
     embed = discord.Embed(description=complete_message, color=color) 

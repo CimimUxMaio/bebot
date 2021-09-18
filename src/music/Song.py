@@ -6,12 +6,13 @@ YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 
 class Song:
-    def __init__(self, search_string):
+    def __init__(self, ctx, search):
+        self.ctx = ctx
         with YoutubeDL(YDL_OPTIONS) as ydl:
             try:
-                song = ydl.extract_info("ytsearch:%s" % search_string, download=False)['entries'][0]
+                song = ydl.extract_info("ytsearch:%s" % search, download=False)['entries'][0]
             except:
-                raise exceptions.InvalidSongName(search_string)
+                raise exceptions.InvalidSongName(search)
 
         self._yt_url = f"https://www.youtube.com/watch?v={song['id']}"
         self._title = song["title"]

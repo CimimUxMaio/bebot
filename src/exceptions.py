@@ -1,4 +1,7 @@
-class ModelException(Exception):
+from discord.ext import commands
+
+
+class ModelException(commands.CommandError):
     def __init__(self, message):
         super().__init__(message)
 
@@ -9,6 +12,14 @@ def InvalidSongName(song_name):
 
 def UserNotConnectedToVoiceChannel():
     return ModelException(f"You must be connected to a voice channel")
+
+
+def BotIsConnectedToAnotherChanel():
+    return ModelException("Bot is already in a voice channel")
+
+
+def NothingIsCurrentlyPlaying():
+    return ModelException("There is not any music playing right now")
 
 
 def IndexOutOfBoundaries(index):
