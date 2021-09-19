@@ -8,7 +8,7 @@ from music.Song import Song
 import utils
 
 
-class MusicCog(Cog):
+class MusicCog(Cog, name="Music"):
     def __init__(self, bot):
         self.bot = bot
         self.services = {}
