@@ -23,7 +23,7 @@ class MusicCog(Cog, name="Music"):
         await ctx.send(embed=utils.embedded_message(
             event="Skipped",
             message=skipped.description,
-            blame=utils.Blamed(ctx.author)
+            blame=ctx.author
         ))
     
     
@@ -53,7 +53,7 @@ class MusicCog(Cog, name="Music"):
                 event="Queued",
                 message=song.description,
                 color=Colour.green(),
-                blame=utils.Blamed(ctx.author)
+                blame=ctx.author
             ))
 
 

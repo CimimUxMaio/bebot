@@ -77,7 +77,7 @@ class MusicService:
             event=event, 
             message=song.description, 
             color=color, 
-            blame=utils.Blamed(ctx.author) if show_blame else None
+            blame=ctx.author if show_blame else None
         )
 
         await ctx.send(embed=embed)
