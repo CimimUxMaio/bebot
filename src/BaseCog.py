@@ -11,6 +11,7 @@ class BaseCog(Cog):
         self.FORWARD_EMOJI = u"\u25b6"
 
     async def show_pages(self, ctx, *, pages, timeout=30):
+        # page amount must be at least 1 
         page_amount = len(pages)
         numerated_pages = [ p.set_footer(text=f"Page {n}/{page_amount}") for n, p in enumerate(pages, start=1) ]
         cur_page = 0
@@ -25,13 +26,12 @@ class BaseCog(Cog):
         while True:
             try:
                 reaction, user = await self.bot.wait_for("reaction_add", check=check, timeout=timeout)
-                if str(reaction.emoji) == self.FORWARD_EMOJI and cur_page != len(pages) -1:
-                    cur_page += 1
-                    await message.edit(embed=numerated_pages[cur_page])
-                elif str(reaction.emoji) == self.BACKWARD_EMOJI and cur_page > 0:
-                    cur_page -= 1
-                    await message.edit(embed=numerated_pages[cur_page])
+                if str(reaction.emoji) == self.FORWARD_EMOJI:
+                    cur_page = min(cur_page+1, page_amount-1)
+                elif str(reaction.emoji) == self.BACKWARD_EMOJI:
+                    cur_page = max(cur_page-1, 0)
                 
+                await message.edit(embed=numerated_pages[cur_page])
                 await message.remove_reaction(reaction, user)
 
             except asyncio.TimeoutError:

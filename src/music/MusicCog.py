@@ -1,4 +1,5 @@
 from discord.colour import Colour
+from discord.embeds import Embed
 from discord.ext.commands.cog import Cog
 from BaseCog import BaseCog
 import exceptions
@@ -6,6 +7,7 @@ from discord.ext import commands
 import config
 from music.MusicService import MusicService
 from music.Song import Song
+from music.SongQueue import SongQueue
 import utils
 
 
@@ -30,16 +32,21 @@ class MusicCog(BaseCog, name="Music"):
     
     @commands.command(aliases=["q"], help=config.command_help("queue"))
     async def queue(self, ctx):
-        message = "Queue is empty"
-        if ctx.music_service.current:
-            message = utils.bold(f"Current: {ctx.music_service.current.description}") + "\n"
-            queue = ctx.music_service.queue
-            queued = [ f"{pos}. {song.description}" for pos, song in enumerate(queue, start=1) ]
-            message += "\n".join(queued)
+        if not ctx.music_service.current:
+            await ctx.send(embed=utils.embedded_message(message="Queue is empty"))
+            return 
 
-        await ctx.send(embed=utils.embedded_message(
-            message=message
-        ))
+        queue: SongQueue = ctx.music_service.queue
+        header = utils.bold(f"Current: {ctx.music_service.current.description}")
+
+        if queue.empty():
+            await ctx.send(embed=utils.embedded_message(message=header))
+            return
+
+        queued = [ f"{pos}. {song.description}" for pos, song in enumerate(queue, start=1) ]
+        pages = [ utils.embedded_message(message=f"{header}\n\n" + "\n".join(group)) for group in self.group_elements(queued, 5) ]
+
+        await self.show_pages(ctx, pages=pages)
 
     
     @commands.command(aliases=["p"], help=config.command_help("play"))
@@ -75,6 +82,9 @@ class MusicCog(BaseCog, name="Music"):
             self.services[ctx.guild.id] = service
 
         return service
+
+    def group_elements(self, elements, group_size):
+        return [ elements[i:i+group_size] for i in range(0, len(elements), group_size) ]
 
 
     # Discord Cog #
