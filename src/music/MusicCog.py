@@ -1,5 +1,6 @@
 from discord.colour import Colour
 from discord.ext.commands.cog import Cog
+from BaseCog import BaseCog
 import exceptions
 from discord.ext import commands
 import config
@@ -8,9 +9,9 @@ from music.Song import Song
 import utils
 
 
-class MusicCog(Cog, name="Music"):
+class MusicCog(BaseCog, name="Music"):
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.services = {}
     
     @commands.command(aliases=["s"], help=config.command_help("skip"))
@@ -89,6 +90,7 @@ class MusicCog(Cog, name="Music"):
 
     async def cog_before_invoke(self, ctx):
         ctx.music_service = self.get_music_service(ctx)
+
 
 
 def setup(bot):
