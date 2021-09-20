@@ -18,8 +18,16 @@ def BotIsConnectedToAnotherChanel():
     return ModelException("Bot is already in a voice channel")
 
 
-def NothingIsCurrentlyPlaying():
-    return ModelException("There is not any music playing right now")
+def NothingCurrentlyPlaying():
+    return ModelException("There is no song currently playing")
+
+
+def NothingCurrentlyLoaded():
+    return ModelException("No song is currently loaded")
+
+
+def NothingCurrentlyPaused():
+    return ModelException("There is no song currently paused")
 
 
 def IndexOutOfBoundaries(index):

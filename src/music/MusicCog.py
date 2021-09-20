@@ -1,7 +1,4 @@
-from discord import embeds
 from discord.colour import Colour
-from discord.embeds import Embed
-from discord.ext.commands.cog import Cog
 from BaseCog import BaseCog
 import exceptions
 from discord.ext import commands
@@ -16,12 +13,10 @@ class MusicCog(BaseCog, name="Music"):
     def __init__(self, bot):
         super().__init__(bot)
         self.services = {}
+
     
     @commands.command(aliases=["s"], help=config.command_help("skip"))
     async def skip(self, ctx, position: int = 0):
-        if not ctx.music_service.is_playing:
-            raise exceptions.NothingIsCurrentlyPlaying()
-
         skipped = ctx.music_service.skip(position)
         await ctx.message.add_reaction(u"\U0001F44C") # Must be under MusicService.skip to prevent race conditions
         await ctx.send(embed=utils.embedded_message(
@@ -88,6 +83,8 @@ class MusicCog(BaseCog, name="Music"):
 
     @play.before_invoke
     @skip.before_invoke
+    @pause.before_invoke
+    @resume.before_invoke
     async def check_voice_conection(self, ctx):
         if not ctx.author.voice or not ctx.author.voice.channel:
             raise exceptions.UserNotConnectedToVoiceChannel()

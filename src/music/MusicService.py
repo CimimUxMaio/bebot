@@ -1,3 +1,4 @@
+import exceptions
 from discord import VoiceClient
 import discord
 from discord.ext import commands
@@ -24,7 +25,18 @@ class MusicService:
 
     @property
     def is_playing(self):
+        return self.is_loaded and self.voice_client.is_playing()
+
+
+    @property
+    def is_loaded(self):
+        """ A song is loaded """
         return bool(self.voice_client and self.current)
+
+
+    @property
+    def is_paused(self):
+        return self.is_loaded and self.voice_client.is_paused()
 
 
     async def play_loop(self):
@@ -44,15 +56,18 @@ class MusicService:
 
 
     def play_next_song(self, error=None):
-        if error:
-            raise Exception(str(error))
-        
         self.current = None
         self.next_song_event.set()
 
+        if error:
+            raise Exception(str(error))
+        
 
     def skip(self, index):
-        if self.is_playing and index == 0:
+        if not self.is_loaded:
+            raise exceptions.NothingCurrentlyLoaded()
+
+        if index == 0:
             skipped = self.current
             self.voice_client.stop()
         else:
@@ -62,13 +77,17 @@ class MusicService:
 
     
     def pause(self):
-        if self.is_playing and self.voice_client.is_playing():
-            self.voice_client.pause()
+        if not self.is_playing:
+            raise exceptions.NothingCurrentlyPlaying()
+
+        self.voice_client.pause()
 
 
     def resume(self):
-        if self.is_playing and self.voice_client.is_paused():  
-            self.voice_client.resume()
+        if not self.is_paused:
+            raise exceptions.NothingCurrentlyPaused()
+
+        self.voice_client.resume()
 
 
     async def queue_song(self, song):
