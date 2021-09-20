@@ -94,6 +94,10 @@ class MusicService:
         await self._queue.put(song) 
 
 
+    def shuffle_queue(self):
+        self._queue.shuffle()
+
+
     async def finish(self):
         self._queue.clear()
         if self.voice_client:

@@ -1,5 +1,6 @@
 import asyncio
 import itertools
+from random import shuffle
 
 
 class SongQueue(asyncio.Queue):
@@ -22,3 +23,6 @@ class SongQueue(asyncio.Queue):
         removed = self._queue[index]
         del self._queue[index]
         return removed
+    
+    def shuffle(self):
+        shuffle(self._queue)

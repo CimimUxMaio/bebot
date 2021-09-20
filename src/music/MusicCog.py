@@ -1,4 +1,5 @@
 from discord.colour import Colour
+from discord.ext.commands.core import command
 from BaseCog import BaseCog
 import exceptions
 from discord.ext import commands
@@ -13,12 +14,13 @@ class MusicCog(BaseCog, name="Music"):
     def __init__(self, bot):
         super().__init__(bot)
         self.services = {}
+        self.OK_EMOJI = u"\U0001F44C"
 
     
     @commands.command(aliases=["s"], help=config.command_help("skip"))
     async def skip(self, ctx, position: int = 0):
         skipped = ctx.music_service.skip(position)
-        await ctx.message.add_reaction(u"\U0001F44C") # Must be under MusicService.skip to prevent race conditions
+        await ctx.message.add_reaction(self.OK_EMOJI) # Must be under MusicService.skip to prevent race conditions
         await ctx.send(embed=utils.embedded_message(
             event="Skipped",
             message=skipped.description,
@@ -80,12 +82,19 @@ class MusicCog(BaseCog, name="Music"):
             blame=ctx.author
         ))
 
+    
+    @commands.command(aliases=["sh"], help=config.command_help("shuffle"))
+    async def shuffle(self, ctx):
+        ctx.music_service.shuffle_queue()
+        await ctx.message.add_reaction(self.OK_EMOJI)
+
 
     @play.before_invoke
     @skip.before_invoke
     @pause.before_invoke
     @resume.before_invoke
-    async def check_voice_conection(self, ctx):
+    @shuffle.before_invoke
+    async def check_voice_connection(self, ctx):
         if not ctx.author.voice or not ctx.author.voice.channel:
             raise exceptions.UserNotConnectedToVoiceChannel()
 
