@@ -21,8 +21,8 @@ class MusicCog(BaseCog, name="Music"):
         if not ctx.music_service.is_playing:
             raise exceptions.NothingIsCurrentlyPlaying()
 
-        await ctx.message.add_reaction(u"\U0001F44C")
         skipped = ctx.music_service.skip(position)
+        await ctx.message.add_reaction(u"\U0001F44C") # Must be under MusicService.skip to prevent race conditions
         await ctx.send(embed=utils.embedded_message(
             event="Skipped",
             message=skipped.description,
