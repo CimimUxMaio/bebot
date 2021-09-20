@@ -32,7 +32,7 @@ async def on_command_error(ctx, error):
     
     if isinstance(original_error, commands.CommandError):
         embed = utils.embedded_message(event="Error", message=str(error), color=discord.Colour.red())
-        await ctx.send(embed=embed)
+        await utils.send_temporary_embed(ctx, embed=embed)
         return
 
     raise error
