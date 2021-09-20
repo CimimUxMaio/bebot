@@ -20,7 +20,6 @@ class MusicCog(BaseCog, name="Music"):
     @commands.command(aliases=["s"], help=config.command_help("skip"))
     async def skip(self, ctx, position: int = 0):
         skipped = ctx.music_service.skip(position)
-        await ctx.message.add_reaction(self.OK_EMOJI) # Must be under MusicService.skip to prevent race conditions
         await ctx.send(embed=utils.embedded_message(
             event="Skipped",
             message=skipped.description,
@@ -86,7 +85,11 @@ class MusicCog(BaseCog, name="Music"):
     @commands.command(aliases=["sh"], help=config.command_help("shuffle"))
     async def shuffle(self, ctx):
         ctx.music_service.shuffle_queue()
-        await ctx.message.add_reaction(self.OK_EMOJI)
+
+
+    @commands.command(aliases=["pg"], help=config.command_help("purge"))
+    async def purge(self, ctx):
+        ctx.music_service.purge_queue()
 
 
     @play.before_invoke
@@ -100,6 +103,12 @@ class MusicCog(BaseCog, name="Music"):
 
         if ctx.voice_client and ctx.voice_client.channel != ctx.author.voice.channel:
             raise exceptions.BotIsConnectedToAnotherChanel()
+
+
+    @shuffle.after_invoke
+    @purge.after_invoke
+    async def add_ok_reaction(self, ctx):
+        await ctx.message.add_reaction(self.OK_EMOJI)
 
 
     def get_music_service(self, ctx):

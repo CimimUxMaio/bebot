@@ -98,6 +98,10 @@ class MusicService:
         self._queue.shuffle()
 
 
+    def purge_queue(self):
+        self._queue.clear()
+
+
     async def finish(self):
         self._queue.clear()
         if self.voice_client:

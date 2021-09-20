@@ -27,6 +27,10 @@
       "help": "Shuffles the queue"
     },
 
+    "purge": {
+      "help": "Removes all songs in the queue"
+    },
+
     "dices": {
       "help": "Generates a random number between 1 and 6"
     }
