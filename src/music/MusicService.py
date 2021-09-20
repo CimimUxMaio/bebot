@@ -60,6 +60,16 @@ class MusicService:
 
         return skipped
 
+    
+    def pause(self):
+        if self.is_playing and self.voice_client.is_playing():
+            self.voice_client.pause()
+
+
+    def resume(self):
+        if self.is_playing and self.voice_client.is_paused():  
+            self.voice_client.resume()
+
 
     async def queue_song(self, song):
         await self._queue.put(song) 

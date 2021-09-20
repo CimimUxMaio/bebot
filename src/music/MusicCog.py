@@ -1,3 +1,4 @@
+from discord import embeds
 from discord.colour import Colour
 from discord.embeds import Embed
 from discord.ext.commands.cog import Cog
@@ -63,6 +64,26 @@ class MusicCog(BaseCog, name="Music"):
                 color=Colour.green(),
                 blame=ctx.author
             ))
+
+    
+    @commands.command(help=config.command_help("pause"))
+    async def pause(self, ctx):
+        ctx.music_service.pause()
+        await ctx.send(embed=utils.embedded_message(
+            event="Paused",
+            message=ctx.music_service.current.description,
+            blame=ctx.author
+        ))
+
+
+    @commands.command(help=config.command_help("resume"))
+    async def resume(self, ctx):
+        ctx.music_service.resume()
+        await ctx.send(embed=utils.embedded_message(
+            event="Resumed",
+            message=ctx.music_service.current.description,
+            blame=ctx.author
+        ))
 
 
     @play.before_invoke

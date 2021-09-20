@@ -13,5 +13,13 @@
 
     "help": {
       "help": "Shows this message"
+    },
+
+    "pause": {
+      "help": "Pauses the current playing song if any"
+    },
+
+    "resume": {
+      "help": "Resumes the previously paused song if any"
     }
 }
