@@ -25,10 +25,10 @@ class Song:
         minutes, remainder = divmod(remainder, 60)
         seconds = remainder % 60
 
-        def padd(n):
+        def pad(n):
             return f"0{n}" if n < 10 else str(n)
 
-        return f"[{self._title}]({self._yt_url}) ({padd(hours)}:{padd(minutes)}:{padd(seconds)})"
+        return f"[{self._title}]({self._yt_url}) ({pad(hours)}:{pad(minutes)}:{pad(seconds)})"
 
     def audio(self):
         return FFmpegPCMAudio(self._audio_url, **FFMPEG_OPTIONS)
