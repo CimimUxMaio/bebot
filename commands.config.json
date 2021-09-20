@@ -21,5 +21,9 @@
 
     "resume": {
       "help": "Resumes the previously paused song if any"
+    },
+
+    "dices": {
+      "help": "Generates a random number between 1 and 6"
     }
 }

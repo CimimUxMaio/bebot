@@ -4,6 +4,7 @@ import config
 import utils
 import music.MusicCog as musiccog
 import HelpCog as helpcog
+import MiscellaneousCog as miscellaneouscog
 
 
 PREFIX = config.BOT_PREFIX
@@ -14,6 +15,7 @@ bot.remove_command("help")
 # SETUP #
 
 musiccog.setup(bot)
+miscellaneouscog.setup(bot)
 helpcog.setup(bot)
 
 
