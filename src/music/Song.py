@@ -21,9 +21,9 @@ class Song:
 
     @property
     def description(self):
-        hours = int(self._duration / 3600)
-        minutes = int(self._duration / 60)
-        seconds = self._duration % 60
+        hours, remainder = divmod(self._duration, 3600)
+        minutes, remainder = divmod(remainder, 60)
+        seconds = remainder % 60
 
         def padd(n):
             return f"0{n}" if n < 10 else str(n)
