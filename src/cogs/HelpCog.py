@@ -1,8 +1,5 @@
-import asyncio
-import discord
-from discord.ext.commands.bot import Bot
 from discord.ext.commands.cog import Cog
-from BaseCog import BaseCog
+from cogs.BaseCog import BaseCog
 import config
 import discord.ext.commands as commands
 from discord import Embed, Colour
@@ -24,12 +21,23 @@ class HelpCog(BaseCog, name="Help"):
     
 
     def cog_description(self, prefix, cog: Cog):
-        description="\n\n".join([ self.command_description(prefix, cmd) for cmd in cog.get_commands() ])
-        return Embed(
-            title=cog.qualified_name,
-            description=description,
-            color=Colour.blue()
-        )
+        commands = cog.get_commands()
+        embed = Embed(title=cog.qualified_name, color=Colour.blue())
+
+        for cmd in commands:
+            embed.add_field(
+                name=f"{prefix} {cmd.name} {utils.italics(cmd.signature)}", 
+                value=cmd.help            
+            )
+
+        return embed
+
+#        description="\n\n".join([ self.command_description(prefix, cmd) for cmd in cog.get_commands() ])
+#        return Embed(
+#            title=cog.qualified_name,
+#            description=description,
+#            color=Colour.blue()
+#        )
 
 
 

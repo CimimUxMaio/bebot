@@ -1,5 +1,5 @@
 from discord.colour import Colour
-from BaseCog import BaseCog
+from cogs.BaseCog import BaseCog
 import exceptions
 from discord.ext import commands
 import config

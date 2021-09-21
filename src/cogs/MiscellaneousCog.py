@@ -1,4 +1,4 @@
-from BaseCog import BaseCog
+from cogs.BaseCog import BaseCog
 from discord.ext.commands import command
 import random
 import utils
