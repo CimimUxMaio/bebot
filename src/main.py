@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 import config
 import utils
-import music.MusicCog as musiccog
-import HelpCog as helpcog
-import MiscellaneousCog as miscellaneouscog
+import cogs.MusicCog as musiccog
+import cogs.HelpCog as helpcog
+import cogs.MiscellaneousCog as miscellaneouscog
 
 
 PREFIX = config.BOT_PREFIX

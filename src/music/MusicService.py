@@ -5,7 +5,6 @@ from discord.ext import commands
 from music.SongQueue import SongQueue
 import utils
 import asyncio
-from async_timeout import timeout
 
 
 class MusicService:

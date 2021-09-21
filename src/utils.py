@@ -1,6 +1,5 @@
 import asyncio
 from typing import Union
-from async_timeout import timeout
 import discord
 from discord.ext.commands import Context
 
