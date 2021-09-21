@@ -44,7 +44,7 @@ class MusicService:
             self.next_song_event.clear()
 
             try:
-                self.current = await asyncio.wait_for(self._queue.get(), timeout=5)
+                self.current = await asyncio.wait_for(self._queue.get(), timeout=20)
             except asyncio.TimeoutError:
                 self.bot.loop.create_task(self.finish())
                 return
@@ -76,6 +76,11 @@ class MusicService:
         return skipped
 
     
+    async def leave(self):
+        self.audio_player.cancel()
+        await self.finish()
+
+    
     def pause(self):
         if not self.is_playing:
             raise exceptions.NothingCurrentlyPlaying()
@@ -104,6 +109,7 @@ class MusicService:
 
     async def finish(self):
         self._queue.clear()
+        self.current = None
         if self.voice_client:
             await self.voice_client.disconnect()
             self.voice_client = None

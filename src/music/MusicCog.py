@@ -87,9 +87,9 @@ class MusicCog(BaseCog, name="Music"):
         ctx.music_service.shuffle_queue()
 
 
-    @commands.command(aliases=["pg"], help=config.command_help("purge"))
-    async def purge(self, ctx):
-        ctx.music_service.purge_queue()
+    @commands.command(aliases=["l"], help=config.command_help("leave"))
+    async def leave(self, ctx):
+        await ctx.music_service.leave()
 
 
     @play.before_invoke
@@ -106,7 +106,7 @@ class MusicCog(BaseCog, name="Music"):
 
 
     @shuffle.after_invoke
-    @purge.after_invoke
+    @leave.after_invoke
     async def add_ok_reaction(self, ctx):
         await ctx.message.add_reaction(self.OK_EMOJI)
 
@@ -125,9 +125,9 @@ class MusicCog(BaseCog, name="Music"):
 
     # Discord Cog #
 
-    def cog_unload(self):
-        for service in self.services.values():
-            self.bot.loop.create_task(service.finish())
+    #def cog_unload(self):
+    #    for service in self.services.values():
+    #        self.bot.loop.create_task(service.finish())
 
     def cog_check(self, ctx):
         if not ctx.guild:

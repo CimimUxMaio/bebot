@@ -10,7 +10,7 @@ class BaseCog(Cog):
         self.BACKWARD_EMOJI = u"\u25c0"
         self.FORWARD_EMOJI = u"\u25b6"
 
-    async def show_pages(self, ctx, *, pages, timeout=30):
+    async def show_pages(self, ctx, *, pages, timeout=60):
         # page amount must be at least 1 
         page_amount = len(pages)
         numerated_pages = [ p.set_footer(text=f"Page {n}/{page_amount}") for n, p in enumerate(pages, start=1) ]

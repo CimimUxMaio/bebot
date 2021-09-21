@@ -27,8 +27,8 @@
       "help": "Shuffles the queue"
     },
 
-    "purge": {
-      "help": "Removes all songs in the queue"
+    "leave": {
+      "help": "Clears the queue and leaves the voice channel"
     },
 
     "dices": {
