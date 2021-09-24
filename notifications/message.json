@@ -1,0 +1,10 @@
+{
+    "title": "Bot update",
+    "description": "Mensaje de prueba",
+    "items": [
+        {
+            "name": "Item de prueba",
+            "value": "descripcion de prueba"
+        }
+    ]
+}
