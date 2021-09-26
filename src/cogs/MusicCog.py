@@ -91,6 +91,15 @@ class MusicCog(BaseCog, name="Music"):
         await ctx.music_service.leave()
 
 
+    @commands.command(help=config.command_help("lyrics"))
+    async def lyrics(self, ctx):
+        lyrics = ctx.music_service.current_lyrics()
+        lines = lyrics.splitlines()
+        line_groups = self.group_elements(lines, 70)
+        pages = [ utils.embedded_message(message="\n".join(group)) for group in line_groups ]
+        await self.show_pages(ctx, pages=pages)
+
+
     @play.before_invoke
     @skip.before_invoke
     @pause.before_invoke

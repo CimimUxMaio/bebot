@@ -30,5 +30,9 @@ def NothingCurrentlyPaused():
     return ModelException("There is no song currently paused")
 
 
+def LyricsNotFound(song_title):
+    return ModelException(f"Couldn't find lyrics for: \"{song_title}\"")
+
+
 def IndexOutOfBoundaries(index):
     return ModelException(f"There is no song at index {index}")

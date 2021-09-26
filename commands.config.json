@@ -27,6 +27,10 @@
       "help": "Shuffles the queue"
     },
 
+    "lyrics": {
+      "help": "Displays the current song lyrics"
+    },
+
     "leave": {
       "help": "Clears the queue and leaves the voice channel"
     },

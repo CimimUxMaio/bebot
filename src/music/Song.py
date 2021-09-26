@@ -1,9 +1,19 @@
+import lyricsgenius as lg
 from discord.player import FFmpegPCMAudio
 from youtube_dl import YoutubeDL
+from config import GENIUS_ACCESS_TOKEN
 import exceptions
+import re
+
 
 YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
+LyricsGenius = lg.Genius(GENIUS_ACCESS_TOKEN)
+LyricsGenius.verbose = False
+LyricsGenius.remove_section_headers = True
+LyricsGenius.skip_non_songs = True
+
 
 class Song:
     def __init__(self, ctx, search):
@@ -18,6 +28,8 @@ class Song:
         self._title = song["title"]
         self._audio_url = song["url"]
         self._duration = song["duration"]
+        self._lyrics_searched = False
+        self._lyrics = None
 
     @property
     def description(self):
@@ -30,5 +42,23 @@ class Song:
 
         return f"[{self._title}]({self._yt_url}) ({pad(hours)}:{pad(minutes)}:{pad(seconds)})"
 
+
+    @property
+    def title(self):
+        return self._title
+
+    @property
+    def lyrics(self):
+        if not self._lyrics_searched:
+            self._lyrics = self._request_lyrics()
+
+        return self._lyrics
+
     def audio(self):
         return FFmpegPCMAudio(self._audio_url, **FFMPEG_OPTIONS)
+
+    def _request_lyrics(self):
+        formatted_title = re.sub("\(.*?\)", "", self.title).strip()
+        res = LyricsGenius.search_song(formatted_title, get_full_info=False)
+        self._lyrics_searched = True
+        return res.lyrics if res else None

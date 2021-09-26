@@ -101,6 +101,17 @@ class MusicService:
     def shuffle_queue(self):
         self._queue.shuffle()
 
+    
+    def current_lyrics(self):
+        if not self.is_loaded:
+            raise exceptions.NothingCurrentlyLoaded()
+
+        lyrics = self.current.lyrics
+        if not lyrics:
+            raise exceptions.LyricsNotFound(self.current.title)
+
+        return lyrics
+
 
     def purge_queue(self):
         self._queue.clear()
