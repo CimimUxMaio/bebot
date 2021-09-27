@@ -58,7 +58,8 @@ class Song:
         return FFmpegPCMAudio(self._audio_url, **FFMPEG_OPTIONS)
 
     def _request_lyrics(self):
-        formatted_title = re.sub("\(.*?\)", "", self.title).strip()
+        unwanted_re = "(\(.*?\))|(\[.*?\])"
+        formatted_title = re.sub(unwanted_re, "", self.title).strip()
         res = LyricsGenius.search_song(formatted_title, get_full_info=False)
         self._lyrics_searched = True
         return res.lyrics if res else None

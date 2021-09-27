@@ -28,7 +28,7 @@
     },
 
     "lyrics": {
-      "help": "Displays the current song lyrics"
+      "help": "Displays the current song's lyrics"
     },
 
     "leave": {
