@@ -1,10 +1,19 @@
 {
-    "title": "Bot update",
-    "description": "Mensaje de prueba",
+    "title": "Actualizacion",
+    "description": [
+        "Solo por esta vez, este mensaje se va a mostrar en el respectivo canal #general de cada servidor",
+        "El objetivo de este mensaje es notificar cuando sucedan cambios en el bot",
+        "En el futuro este mensaje solo va a ser enviado a un canal llamado #bebot-notifications, si este canal no extiste, no podran ver las notificaciones",
+        "Si quieren recibir este tipo de mensajes, habiliten un canal de texto #bebot-notifications"
+    ],
     "items": [
         {
-            "name": "Item de prueba",
-            "value": "descripcion de prueba"
+            "name": "Lyrics",
+            "value": [
+                "Ya esta disponible el comando 'lyrics' para poder visualizar la letra de la cancion que esta sonado actualmente",
+                "El comando puede fallar si el titulo del video de youtube de la cancion contiene mas informacion que solo el titulo de la misma", 
+                "Titulos que incluyan: '(Oficial video)' tanto con '()' o '[]' estan contemplados, por lo que titulos como: `Nombre de una cancion - Autor [Video oficial]` deberian funcionar correctamente"
+            ]
         }
     ]
 }

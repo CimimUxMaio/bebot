@@ -1,3 +1,4 @@
+import discord
 from discord.embeds import Embed
 from discord.channel import TextChannel
 from discord.ext.commands.bot import Bot
@@ -6,21 +7,30 @@ import dotenv
 import os
 import json
 
-
 dotenv.load_dotenv()
 
 TOKEN = os.getenv("TOKEN")
+
+
+def format_content(content):
+    if isinstance(content, list):
+        sep = "\n\U00002800- "
+        return sep[1:] + sep.join(content)
+
+    return content
+
 
 with open("./notifications/message.json", "r") as file:
     MESSAGE_JSON = json.load(file)
 
 MESSAGE = Embed(
     title=MESSAGE_JSON["title"],
-    description=MESSAGE_JSON["description"]
+    description=format_content(MESSAGE_JSON["description"]),
+    colour=discord.Colour.blue()
 )
 
 for item in MESSAGE_JSON["items"]:
-    MESSAGE.add_field(name=item["name"], value=item["value"])
+    MESSAGE.add_field(name=item["name"], value=format_content(item["value"]))
 
 
 bot = Bot(command_prefix=None)
