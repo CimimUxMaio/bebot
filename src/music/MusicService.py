@@ -43,7 +43,7 @@ class MusicService:
             self.next_song_event.clear()
 
             try:
-                self.current = await asyncio.wait_for(self._queue.get(), timeout=20)
+                self.current = await asyncio.wait_for(self._queue.get(), timeout=10*60)
             except asyncio.TimeoutError:
                 self.bot.loop.create_task(self.finish())
                 return

@@ -15,8 +15,8 @@ dice_emojis = {
 }
 
 class MiscellaneousCog(BaseCog, name="Miscellaneous"):
-    @command(help=config.command_help("dices"))
-    async def dices(self, ctx):
+    @command(help=config.command_help("dice"))
+    async def dice(self, ctx):
         result = random.randint(1, 6)
         await ctx.send(embed=utils.embedded_message(
             message=f"{result} {dice_emojis[result]}"

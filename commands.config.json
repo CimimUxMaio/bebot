@@ -35,7 +35,7 @@
       "help": "Clears the queue and leaves the voice channel"
     },
 
-    "dices": {
+    "dice": {
       "help": "Generates a random number between 1 and 6"
     }
 }
