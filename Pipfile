@@ -1,0 +1,33 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aiohttp = "*"
+async-timeout = "*"
+attrs = "*"
+beautifulsoup4 = "*"
+certifi = "*"
+cffi = "*"
+chardet = "*"
+charset-normalizer = "*"
+"discord.py" = "*"
+idna = "*"
+lyricsgenius = "*"
+multidict = "*"
+pycparser = "*"
+python-dotenv = "*"
+requests = "*"
+six = "*"
+soupsieve = "*"
+typing-extensions = "*"
+urllib3 = "*"
+yarl = "*"
+PyNaCl = "*"
+youtube_dl = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
